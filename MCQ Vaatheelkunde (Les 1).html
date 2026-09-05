@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oefenvragen — Vaatheelkunde 1: algemene inleiding</title>
+<style>
+  :root{
+    /* papier */
+    --paper:#FFFFFF;
+    --tint:#FBF6F5;
+    --tint-2:#F5EBEA;
+    --line:#E7DAD9;
+    --line-soft:#EFE5E4;
+    --text:#241A1E;
+    --muted:#786169;
+    /* bloed: chrome, voortgang, vignet */
+    --blood:#8C1D33;
+    --blood-dark:#6E1327;
+    --blood-soft:#F7E9EB;
+    /* geoxygeneerd: juist antwoord */
+    --ok:#1C7A5B;
+    --ok-soft:#E9F4EF;
+    /* fout antwoord */
+    --wrong:#C62B3E;
+    --wrong-soft:#FDECEE;
+    --r:12px;
+    --pad:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 var(--pad) 56px}
+
+  /* ---------- top bar ---------- */
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 0 10px;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:22px;
+  }
+  .back{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--muted);text-decoration:none;
+    font-size:14px;font-weight:500;
+    padding:10px 12px 10px 0;
+    border-radius:var(--r);
+    transition:color .15s ease;
+  }
+  .back:hover{color:var(--blood)}
+  .brand{font-size:12px;color:#A08A90}
+
+  /* ---------- vat als voortgangsindicator ---------- */
+  .vessel{display:flex;gap:2px;height:9px;margin:0 0 8px}
+  .seg{
+    flex:1;background:var(--tint-2);
+    transition:background .35s ease;
+  }
+  .seg:first-child{border-radius:6px 0 0 6px}
+  .seg:last-child{border-radius:0 6px 6px 0}
+  .seg.done{background:var(--blood-dark)}
+  .seg.now{background:var(--blood)}
+  .count{font-size:13px;color:var(--muted);margin:0 0 20px}
+
+  /* ---------- typografie ---------- */
+  h1{font-size:27px;line-height:1.2;letter-spacing:-.02em;font-weight:650;margin:0 0 6px}
+  h1:focus,h2:focus{outline:none}
+  .lede{color:var(--muted);margin:0 0 26px;font-size:15.5px}
+  .vignette{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:16.5px;line-height:1.62;color:#4A3840;
+    margin:0 0 14px;padding-left:14px;
+    border-left:2px solid var(--blood);
+  }
+  .stem{font-size:19px;line-height:1.38;font-weight:600;margin:0 0 18px;letter-spacing:-.01em}
+
+  /* ---------- recap ---------- */
+  .recap{list-style:none;margin:0 0 28px;padding:0}
+  .recap li{
+    padding:12px 0 12px 15px;
+    border-left:2px solid var(--line);
+    font-size:15px;color:#4A3840;
+  }
+  .recap li + li{margin-top:2px}
+  .recap b{color:var(--text);font-weight:600}
+
+  /* ---------- antwoordopties ---------- */
+  .opts{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;
+    width:100%;min-height:52px;padding:13px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    color:var(--text);
+    font:inherit;font-size:15.5px;line-height:1.4;
+    text-align:left;cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:#C9A9AF;background:var(--tint)}
+  .opt:disabled{cursor:default}
+  .key{
+    flex:0 0 22px;height:22px;margin-top:1px;
+    display:grid;place-items:center;
+    border:1px solid var(--line);border-radius:6px;
+    font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
+  }
+  .opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.ok .key{border-color:var(--ok);color:#FFFFFF;background:var(--ok);font-size:13px}
+  .opt.bad{border-color:var(--wrong);background:var(--wrong-soft)}
+  .opt.bad .key{border-color:var(--wrong);color:#FFFFFF;background:var(--wrong);font-size:13px}
+  .opt.dim{opacity:.66}
+  .why{margin:9px 0 0;padding:0;font-size:14px;line-height:1.5;color:var(--muted)}
+  .opt.ok .why{color:#16624A}
+  .opt.bad .why{color:#98202F}
+  .col{display:flex;flex-direction:column;min-width:0}
+
+  /* ---------- verdict en knoppen ---------- */
+  .verdict{font-size:14.5px;font-weight:600;margin:0 0 14px}
+  .verdict.good{color:var(--ok)}
+  .verdict.poor{color:var(--wrong)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:100%;min-height:52px;padding:14px 20px;
+    border-radius:var(--r);border:1px solid transparent;
+    font:inherit;font-size:16px;font-weight:600;
+    cursor:pointer;text-decoration:none;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .btn-primary{background:var(--blood);color:#FFF8F9;border-color:var(--blood)}
+  .btn-primary:hover{background:var(--blood-dark);border-color:var(--blood-dark)}
+  .btn-ghost{background:var(--paper);color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:#C9A9AF;background:var(--tint)}
+  .btn + .btn{margin-top:10px}
+  .hint{font-size:12.5px;color:#A08A90;margin:14px 0 0;text-align:center}
+
+  /* ---------- eindscherm ---------- */
+  .score{display:flex;align-items:baseline;gap:12px;padding:20px 0 4px}
+  .score b{font-size:44px;font-weight:650;letter-spacing:-.03em;line-height:1;color:var(--blood)}
+  .score span{font-size:15px;color:var(--muted)}
+  .msg{color:#4A3840;margin:8px 0 26px;font-size:15.5px}
+  .review{margin:0 0 24px}
+  .review h2{font-size:15px;font-weight:600;color:var(--muted);margin:0 0 12px}
+  .miss{
+    background:var(--tint);border:1px solid var(--line);
+    border-radius:var(--r);padding:14px;margin-bottom:10px;
+  }
+  .miss p{margin:0 0 6px;font-size:15px;line-height:1.4;font-weight:600}
+  .miss .fix{margin:0 0 12px;font-size:14px;color:var(--muted);line-height:1.5}
+  .miss .fix em{color:#16624A;font-style:normal}
+  .jump{
+    display:inline-flex;align-items:center;gap:8px;
+    min-height:44px;padding:10px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;
+    color:var(--text);text-decoration:none;font-size:14px;font-weight:500;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .jump:hover{border-color:var(--blood);background:var(--blood-soft)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--blood);flex:0 0 auto}
+
+  :focus-visible{outline:2px solid var(--blood-dark);outline-offset:2px;border-radius:4px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+  @media (min-width:600px){:root{--pad:24px} h1{font-size:31px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <a class="back" id="backLink" href="#" target="_blank" rel="noopener">← Terug naar de video</a>
+    <span class="brand">LUCID · Vaatheelkunde</span>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD — hier pas je alles aan. De renderlogica eronder blijft ongemoeid.
+
+   t = het moment in de video waar het juiste antwoord gezegd wordt.
+       Schrijf het als "m:ss" of "u:mm:ss" (bv. "4:35"), of als een
+       getal in seconden (bv. 275). Beide werken.
+
+   De volgorde van de opties wordt bij het starten altijd door elkaar
+   gehusseld, dus de plaats van het juiste antwoord in deze lijst is
+   voor de student niet zichtbaar.
+   ========================================================================= */
+
+const QUIZ = {
+  videoUrl: "https://youtu.be/E2-Jqkn0reY",
+  title: "Vaatheelkunde 1 — algemene inleiding",
+  lede: "Negen vragen over de video. Kies een antwoord, lees waarom elke optie klopt of niet, en spring achteraf terug naar het stuk dat je gemist hebt.",
+
+  recap: [
+    "<b>Atherosclerose is systemisch.</b> In de westerse wereld bij zowat 100% van de volwassenen, toenemend met de leeftijd, en tegelijk cerebrovasculair, coronair en perifeer arterieel.",
+    "<b>Risicofactoren.</b> Traditioneel beïnvloedbaar: roken, diabetes, hyperlipidemie, hypertensie. Traditioneel niet-beïnvloedbaar: geslacht, leeftijd, erfelijkheid. Niet-traditioneel: levensstijl en omgeving, met twee vrouwspecifieke factoren (zwangerschapsgeïnduceerde hypertensie of diabetes, en menopauze).",
+    "<b>Arteriën.</b> Endotheel als binnenste laag: verhindert klontervorming, geeft vaso-actieve stoffen af, staat onder (para)sympathische invloed. Elke arterie houdt mee de bloeddruk in stand.",
+    "<b>Venen.</b> Weinig spiervezels, grotere diameter, tragere stroom, opslagfunctie. Kleppen laten enkel oppervlakkig → diep en perifeer → centraal toe. Terugvloei via vis a fronte (lediging rechter atrium), vis a tergo (restdruk na de capillairen), drukveranderingen in thorax en abdomen, en de spierpomp.",
+    "<b>Lymfe.</b> In rust niet actief, sneller bij spieractiviteit. Vooral eiwitten uit de interstitiële ruimte, gefilterd in de lymfeknopen en teruggebracht naar de veneuze circulatie. Beschermt tegen bacteriële infectie en voorkomt oedeem.",
+    "<b>Plaquevorming.</b> Endotheelschade (shear stress, hypertensie, turbulentie, nicotine) → subendotheliaal LDL → oxidatie → monocyten en macrofagen → schuimcellen samen met gladde spiercellen uit de media → fatty streak → stabiele of kwetsbare plaque."
+  ],
+
+  questions: [
+    {
+      t: "1:10",
+      vignette: "Een 66-jarige man wordt verwezen wegens claudicatio van het rechterbeen. Verder heeft hij geen klachten.",
+      stem: "Welke uitspraak over atherosclerose sluit het best aan bij de inleiding van deze les?",
+      options: [
+        { text: "In de westerse wereld is atherosclerose bij ongeveer een tiende van de volwassenen aanwezig.",
+          correct: false,
+          why: "Zwaar onderschat: het is bij zowat 100% van de volwassenen aanwezig. Wat verschilt tussen mensen is de ernst, niet de aanwezigheid." },
+        { text: "De ziekte blijft doorgaans beperkt tot het vaatbed waar de patiënt klachten van heeft.",
+          correct: false,
+          why: "Denkfout: de symptomen zijn lokaal, de ziekte niet. Klachten in één been zeggen niets over de afwezigheid van plaques elders." },
+        { text: "Het is een systemische ziekte die elk bloedvat kan aantasten en tegelijk cerebrovasculair, coronair en perifeer arterieel speelt.",
+          correct: true,
+          why: "Juist. Precies daarom kijk je bij perifere klachten ook actief naar het coronaire en cerebrovasculaire vaatbed." },
+        { text: "Perifeer vaatlijden wordt zelden door atherosclerose veroorzaakt; meestal ligt er een andere oorzaak aan de basis.",
+          correct: false,
+          why: "Omgekeerd: atherosclerose is veruit de frequentste oorzaak van perifeer vaatlijden. Niet-atherosclerotische oorzaken bestaan, maar zijn de uitzondering." }
+      ]
+    },
+    {
+      t: "1:48",
+      vignette: "Een 61-jarige vrouw rookt, wordt behandeld voor hypertensie, maakte pre-eclampsie door tijdens haar zwangerschap, en haar vader kreeg op zijn vijftigste een infarct.",
+      stem: "Welke uitspraak over de indeling van haar risicofactoren klopt?",
+      options: [
+        { text: "Geslacht, leeftijd en genetische overerving zijn niet-traditionele risicofactoren.",
+          correct: false,
+          why: "Verwarring tussen 'niet-traditioneel' en 'niet-beïnvloedbaar'. Ze zijn wel degelijk traditioneel, maar inherent aan de persoon en dus niet aanpasbaar." },
+        { text: "Roken, diabetes, hyperlipidemie en hypertensie zijn de traditionele risicofactoren die je effectief kan aanpakken.",
+          correct: true,
+          why: "Juist. Dit zijn de vier traditionele, beïnvloedbare factoren — en dus je concrete aangrijpingspunten bij deze patiënte." },
+        { text: "Zwangerschapsgeïnduceerde hypertensie en menopauze horen bij de traditionele, beïnvloedbare factoren.",
+          correct: false,
+          why: "Dit zijn net de twee vrouwspecifieke factoren binnen de niet-traditionele groep, en ze zijn niet 'aan te pakken' zoals roken of hyperlipidemie." },
+        { text: "Omdat levensstijl en omgeving niet-traditioneel zijn, verklaren ze slechts een verwaarloosbaar deel van de prevalentie.",
+          correct: false,
+          why: "Denkfout: 'niet-traditioneel' betekent niet 'onbelangrijk'. Een groot deel van de hoge prevalentie wordt juist door levensstijl- en omgevingsfactoren verklaard." }
+      ]
+    },
+    {
+      t: "2:22",
+      vignette: "",
+      stem: "Welke uitspraak over de arteriewand en het endotheel is juist?",
+      options: [
+        { text: "Het endotheel is een passieve barrière; vaatverwijding en -vernauwing komen uitsluitend van het (para)sympathisch zenuwstelsel.",
+          correct: false,
+          why: "Denkfout: het endotheel wordt hier als inerte bekleding gezien. Het zenuwstelsel stuurt mee, maar het endotheel geeft zelf vaso-actieve stoffen af." },
+        { text: "Alleen de grote elastische arteriën zoals de aorta beïnvloeden de bloeddruk; de kleinere arteriën en arteriolen niet.",
+          correct: false,
+          why: "Elke arterie oefent een effect uit op de bloeddruk en houdt die mee in stand — juist de kleinere arteriën en arteriolen wegen daarin zwaar door." },
+        { text: "De binnenste laag van de arterie bestaat uit gladde spiercellen; het endotheel ligt daarbuiten.",
+          correct: false,
+          why: "De lagen staan omgewisseld: het endotheel ligt binnenin op de basale membraan (intima), de gladde spiercellen zitten in de media daarbuiten." },
+        { text: "Het endotheel is de binnenste laag, verhindert bloedklontervorming en kan vaso-actieve stoffen vrijstellen die vasoconstrictie of vasodilatatie geven.",
+          correct: true,
+          why: "Juist. Het endotheel is een actief orgaan, en het ondergaat daarnaast ook impulsen van het (para)sympathisch zenuwstelsel." }
+      ]
+    },
+    {
+      t: "3:14",
+      vignette: "",
+      stem: "Welke uitspraak over de venen is juist?",
+      options: [
+        { text: "Ze bevatten weinig spiervezels en hebben een grotere diameter dan de arteriën, waardoor de bloedstroom er trager verloopt.",
+          correct: true,
+          why: "Juist. Weinig spiervezels, ruimer lumen, tragere stroom — en daardoor ook hun rol als opslagcompartiment." },
+        { text: "De bloedstroom verloopt in de venen sneller dan in de arteriën, omdat de weerstand er lager ligt.",
+          correct: false,
+          why: "Weerstand en stroomsnelheid worden door elkaar gehaald. Door de grotere doorsnede stroomt het bloed er net trager." },
+        { text: "Het veneuze stelsel heeft nauwelijks invloed op het circulerend bloedvolume.",
+          correct: false,
+          why: "Net omgekeerd: de opslagfunctie van de venen bepaalt in belangrijke mate hoeveel bloed er effectief circuleert." },
+        { text: "Venen stuwen het bloed actief voort dankzij hun dikke spierlaag.",
+          correct: false,
+          why: "Ze hebben juist weinig spiervezels. Voortstuwing komt van buitenaf: aanzuiging, restdruk, drukveranderingen en de spierpomp." }
+      ]
+    },
+    {
+      t: "3:29",
+      vignette: "Je legt aan een medestudent uit hoe bloed uit de voet tegen de zwaartekracht in het hart bereikt.",
+      stem: "In welke richting(en) laten gezonde veneuze kleppen stroming toe?",
+      options: [
+        { text: "Van diep naar oppervlakkig, en van perifeer naar centraal.",
+          correct: false,
+          why: "De eerste richting staat omgekeerd — een klassieke valkuil. Stroom van diep naar oppervlakkig wijst net op insufficiënte kleppen." },
+        { text: "In beide richtingen, zolang de spierpomp actief blijft.",
+          correct: false,
+          why: "Kleppen zijn eenrichtingsstructuren; de spierpomp verandert daar niets aan. Stroming in twee richtingen betekent klepinsufficiëntie." },
+        { text: "Van oppervlakkig naar diep, en van perifeer naar centraal.",
+          correct: true,
+          why: "Juist. Dat is precies de eenrichtingsopstelling die het bloed uit de onderste ledematen naar het hart laat aanzuigen." },
+        { text: "Van oppervlakkig naar diep, en van centraal naar perifeer.",
+          correct: false,
+          why: "De tweede richting staat omgekeerd: het bloed moet net naar centraal, richting rechter atrium." }
+      ]
+    },
+    {
+      t: "3:54",
+      vignette: "",
+      stem: "Welke uitspraak over de drijvende krachten achter de veneuze terugvloei is juist?",
+      options: [
+        { text: "Vis a fronte is het aanzuigeffect door de lediging van het linker atrium.",
+          correct: false,
+          why: "Verkeerd atrium — een gekende examenvalkuil. Het veneuze bloed uit de ledematen keert terug naar het rechter hart; het linker atrium ligt achter de longcirculatie." },
+        { text: "Vis a fronte is het aanzuigeffect door de lediging van het rechter atrium.",
+          correct: true,
+          why: "Juist. De kracht die van vooraan trekt, is het rechter atrium dat zich ledigt en zo veneus bloed aanzuigt." },
+        { text: "Vis a tergo is de restdruk na passage door de capillairen en is de enige kracht die veneus bloed voortbeweegt.",
+          correct: false,
+          why: "De definitie klopt, het woord 'enige' niet: ook vis a fronte, drukveranderingen in thorax en abdomen en de spierpomp dragen bij." },
+        { text: "De spierpomp bevordert bij contractie de stroom van diep naar oppervlakkig.",
+          correct: false,
+          why: "Richting omgekeerd: bij contractie gaat het bloed van perifeer naar centraal, bij relaxatie van oppervlakkig naar diep." }
+      ]
+    },
+    {
+      t: "4:32",
+      vignette: "Een patiënte merkt dat haar enkels dikker zijn na een dag stilzitten dan na een lange wandeling.",
+      stem: "Welke uitspraak over het lymfestelsel komt overeen met de les?",
+      options: [
+        { text: "Na filtratie in de lymfeknopen wordt de lymfe rechtstreeks aan de arteriële circulatie afgegeven.",
+          correct: false,
+          why: "Verkeerd eindpunt: de lymfe keert terug naar de veneuze circulatie, niet naar de arteriële." },
+        { text: "Lymfe bestaat vooral uit rode bloedcellen die uit de capillairen zijn gelekt.",
+          correct: false,
+          why: "Lymfe wordt verward met bloed. Ze bestaat voornamelijk uit eiwitten uit de interstitiële ruimte." },
+        { text: "Het lymfestelsel speelt geen rol in de afweer tegen bacteriën; het voert enkel vocht af.",
+          correct: false,
+          why: "De afweerfunctie wordt weggelaten, terwijl het lymfestelsel net de belangrijkste factor is in de bescherming tegen bacteriële infectie — én oedeemvorming voorkomt." },
+        { text: "Het lymfestelsel is in rust niet actief; de snelheid van de doorstroming neemt toe met de spieractiviteit.",
+          correct: true,
+          why: "Juist. Beweging drijft de lymfedrainage aan, wat mee verklaart waarom stilzitten oedeem in de hand werkt." }
+      ]
+    },
+    {
+      t: "5:14",
+      vignette: "Een 45-jarige man rookt een pakje per dag en heeft slecht gecontroleerde hypertensie.",
+      stem: "Hoe begint bij hem de vorming van een atherosclerotische plaque?",
+      options: [
+        { text: "Chronische endotheelschade — mechanisch door hoge shear stress, hypertensie en turbulente stroom, chemisch door nicotine — waarna LDL subendotheliaal in de intima accumuleert.",
+          correct: true,
+          why: "Juist. Zijn twee risicofactoren grijpen langs beide wegen aan op hetzelfde beginpunt: het beschadigde endotheel." },
+        { text: "Het LDL hoopt zich eerst op in de media en dringt van daaruit door naar de intima.",
+          correct: false,
+          why: "Laag verwisseld: het LDL stapelt zich subendotheliaal op in de intima, tussen het beschadigde endotheel en het bindweefsel." },
+        { text: "Niet-geoxideerd LDL is de sterkste ontstekingsprikkel; door oxidatie wordt LDL juist onschadelijk.",
+          correct: false,
+          why: "Precies omgekeerd: het geoxideerde LDL is sterk immunogeen en inflammatoir, en dat zet de hele cascade in gang." },
+        { text: "Monocyten differentiëren in de bloedbaan tot macrofagen en hechten pas daarna aan het endotheel.",
+          correct: false,
+          why: "Volgorde omgedraaid: monocyten worden aangetrokken via adhesiemoleculen op het beschadigde endotheel, migreren de intima in en differentiëren daar pas tot macrofagen." }
+      ]
+    },
+    {
+      t: "6:23",
+      vignette: "",
+      stem: "Wat is de fatty streak?",
+      options: [
+        { text: "Een verkalkte, fibreuze eindplaque die het lumen sterk vernauwt.",
+          correct: false,
+          why: "Dat is een laat stadium van de stabiele plaque. De fatty streak gaat daaraan vooraf." },
+        { text: "Een trombus die zich vormt op een gescheurde, kwetsbare plaque.",
+          correct: false,
+          why: "Dat is het gevolg van plaqueruptuur, het scenario met de grootste klinische impact — maar het is niet de beginlaesie." },
+        { text: "De vroegste zichtbare laesie van atherosclerose: macrofagen en gladde spiercellen vol geoxideerd LDL, met een schuimig uitzicht.",
+          correct: true,
+          why: "Juist. Het is het eerste macroscopisch zichtbare stadium, nog vóór er sprake is van een stabiele of kwetsbare plaque." },
+        { text: "Een ophoping van gladde spiercellen die vanuit de intima naar de media migreren.",
+          correct: false,
+          why: "Richting omgekeerd: gladde spiercellen migreren van de media naar de intima, onder invloed van cytokines en groeifactoren van de macrofagen." }
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   RENDERLOGICA — hieronder staat geen inhoud meer.
+   ========================================================================= */
+
+(function () {
+  "use strict";
+
+  var app = document.getElementById("app");
+  var backLink = document.getElementById("backLink");
+  backLink.href = QUIZ.videoUrl;
+
+  var state = { order: [], optOrder: [], current: 0, answers: [], started: false };
+  var LETTERS = "ABCDEFGH";
+
+  function label(i) { return LETTERS.charAt(i) || String(i + 1); }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  /* accepteert 275, "4:35" of "1:04:35" */
+  function toSeconds(t) {
+    if (typeof t === "number") return Math.max(0, Math.round(t));
+    var parts = String(t).trim().split(":").map(function (p) { return parseInt(p, 10) || 0; });
+    var s = 0;
+    for (var i = 0; i < parts.length; i++) s = s * 60 + parts[i];
+    return Math.max(0, s);
+  }
+  function videoAt(t) {
+    var sep = QUIZ.videoUrl.indexOf("?") === -1 ? "?" : "&";
+    return QUIZ.videoUrl + sep + "t=" + toSeconds(t);
+  }
+  function focusFirst() {
+    var h = app.querySelector("[data-focus]");
+    if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- startscherm ---------- */
+  function renderStart() {
+    var items = QUIZ.recap.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+    app.innerHTML =
+      '<h1 data-focus>' + esc(QUIZ.title) + '</h1>' +
+      '<p class="lede">' + esc(QUIZ.lede) + '</p>' +
+      '<ul class="recap">' + items + '</ul>' +
+      '<button class="btn btn-primary" id="start">Start de ' + QUIZ.questions.length + ' vragen</button>' +
+      '<p class="hint">Toets A tot D om te antwoorden, Enter voor de volgende vraag.</p>';
+    document.getElementById("start").addEventListener("click", function () { begin(false); });
+    focusFirst();
+  }
+
+  /* vragen in vaste volgorde bij de eerste beurt, willekeurig bij een nieuwe
+     poging; de opties worden altijd gehusseld */
+  function begin(randomiseQuestions) {
+    var n = QUIZ.questions.length;
+    state.order = randomiseQuestions ? shuffle(range(n)) : range(n);
+    state.optOrder = state.order.map(function (qi) {
+      return shuffle(range(QUIZ.questions[qi].options.length));
+    });
+    state.answers = new Array(n).fill(null);
+    state.current = 0;
+    state.started = true;
+    renderQuestion();
+  }
+
+  /* ---------- vraagscherm ---------- */
+  function renderQuestion() {
+    var pos = state.current;
+    var q = QUIZ.questions[state.order[pos]];
+    var oo = state.optOrder[pos];
+    var total = state.order.length;
+
+    var segs = "";
+    for (var s = 0; s < total; s++) {
+      var cls = s < pos ? "seg done" : (s === pos ? "seg now" : "seg");
+      segs += '<div class="' + cls + '"></div>';
+    }
+
+    var opts = oo.map(function (oi, idx) {
+      var o = q.options[oi];
+      return '<button class="opt" data-idx="' + idx + '" data-opt="' + oi + '">' +
+               '<span class="key">' + label(idx) + '</span>' +
+               '<span class="col"><span>' + esc(o.text) + '</span>' +
+               '<span class="why" hidden></span></span>' +
+             '</button>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="vessel" role="presentation">' + segs + '</div>' +
+      '<p class="count">Vraag ' + (pos + 1) + ' van ' + total + '</p>' +
+      (q.vignette ? '<p class="vignette">' + esc(q.vignette) + '</p>' : '') +
+      '<h2 class="stem" data-focus>' + esc(q.stem) + '</h2>' +
+      '<div class="opts" id="opts">' + opts + '</div>' +
+      '<p class="verdict" id="verdict" aria-live="polite"></p>' +
+      '<div id="actions"></div>';
+
+    Array.prototype.slice.call(app.querySelectorAll(".opt")).forEach(function (b) {
+      b.addEventListener("click", function () { answer(parseInt(b.dataset.opt, 10)); });
+    });
+    focusFirst();
+  }
+
+  function answer(chosenOpt) {
+    var pos = state.current;
+    if (state.answers[pos] !== null) return;
+    state.answers[pos] = chosenOpt;
+
+    var q = QUIZ.questions[state.order[pos]];
+    var isRight = q.options[chosenOpt].correct === true;
+    var buttons = Array.prototype.slice.call(app.querySelectorAll(".opt"));
+    var correctIdx = 0;
+
+    buttons.forEach(function (b, i) {
+      var oi = parseInt(b.dataset.opt, 10);
+      var o = q.options[oi];
+      b.disabled = true;
+      if (o.correct) { b.classList.add("ok"); correctIdx = i; }
+      else if (oi === chosenOpt) b.classList.add("bad");
+      else b.classList.add("dim");
+      var key = b.querySelector(".key");
+      if (o.correct) key.textContent = "\u2713";
+      else if (oi === chosenOpt) key.textContent = "\u2715";
+      var why = b.querySelector(".why");
+      why.textContent = o.why;
+      why.hidden = false;
+    });
+
+    var v = document.getElementById("verdict");
+    v.className = "verdict " + (isRight ? "good" : "poor");
+    v.textContent = isRight ? "Juist." : "Fout — het juiste antwoord is optie " + label(correctIdx) + ".";
+
+    var last = pos === state.order.length - 1;
+    document.getElementById("actions").innerHTML =
+      '<button class="btn btn-primary" id="next">' + (last ? "Bekijk je resultaat" : "Volgende vraag") + '</button>';
+    var next = document.getElementById("next");
+    next.addEventListener("click", advance);
+    next.focus({ preventScroll: true });
+  }
+
+  function advance() {
+    if (state.current === state.order.length - 1) renderResults();
+    else { state.current++; renderQuestion(); }
+  }
+
+  /* ---------- eindscherm ---------- */
+  function renderResults() {
+    state.started = false;
+    var total = state.order.length;
+    var wrong = [];
+    var score = 0;
+
+    state.order.forEach(function (qi, pos) {
+      var q = QUIZ.questions[qi];
+      var chosen = state.answers[pos];
+      if (chosen !== null && q.options[chosen].correct) score++;
+      else wrong.push(q);
+    });
+
+    var pct = Math.round((score / total) * 100);
+    var msg = pct === 100 ? "Alles juist. Deze les zit."
+            : pct >= 75 ? "Stevige basis. Neem de misgelopen stukjes nog eens door."
+            : pct >= 50 ? "De helft zit er. De fragmenten hieronder zijn je snelste winst."
+            : "Nog wat werk. Bekijk de aangeduide stukken opnieuw en probeer daarna nog eens.";
+
+    var reviewHtml = "";
+    if (wrong.length) {
+      reviewHtml = '<div class="review"><h2>Wat nog niet zat</h2>' +
+        wrong.map(function (q) {
+          var right = q.options.filter(function (o) { return o.correct; })[0];
+          return '<div class="miss">' +
+                   '<p>' + esc(q.stem) + '</p>' +
+                   '<p class="fix"><em>' + esc(right.text) + '</em></p>' +
+                   '<a class="jump" href="' + videoAt(q.t) + '" target="_blank" rel="noopener">' +
+                     '<span class="dot"></span>Bekijk dit stuk opnieuw</a>' +
+                 '</div>';
+        }).join("") + '</div>';
+    }
+
+    app.innerHTML =
+      '<h1 data-focus>Resultaat</h1>' +
+      '<div class="score"><b>' + score + '/' + total + '</b><span>' + pct + '% juist</span></div>' +
+      '<p class="msg">' + esc(msg) + '</p>' +
+      reviewHtml +
+      '<button class="btn btn-primary" id="again">Opnieuw proberen</button>' +
+      '<a class="btn btn-ghost" href="' + QUIZ.videoUrl + '" target="_blank" rel="noopener">Terug naar de video</a>';
+
+    document.getElementById("again").addEventListener("click", function () { begin(true); });
+    focusFirst();
+  }
+
+  /* ---------- toetsenbord ---------- */
+  document.addEventListener("keydown", function (e) {
+    if (!state.started) return;
+    if (e.target && (e.target.tagName === "A" || e.target.id === "next")) return;
+    var pos = state.current;
+    var answered = state.answers[pos] !== null;
+
+    if (!answered) {
+      var idx = -1;
+      if (e.key >= "1" && e.key <= "9") idx = parseInt(e.key, 10) - 1;
+      else if (e.key.length === 1) idx = LETTERS.indexOf(e.key.toUpperCase());
+      if (idx >= 0) {
+        var b = app.querySelector('.opt[data-idx="' + idx + '"]');
+        if (b) { e.preventDefault(); answer(parseInt(b.dataset.opt, 10)); return; }
+      }
+    }
+    if (e.key === "Enter" && answered) { e.preventDefault(); advance(); }
+  });
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
