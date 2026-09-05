@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oefenvragen — Vaatheelkunde 6: aneurysma's</title>
+<style>
+  :root{
+    /* papier */
+    --paper:#FFFFFF;
+    --tint:#FBF6F5;
+    --tint-2:#F5EBEA;
+    --line:#E7DAD9;
+    --line-soft:#EFE5E4;
+    --text:#241A1E;
+    --muted:#786169;
+    /* bloed: chrome, voortgang, vignet */
+    --blood:#8C1D33;
+    --blood-dark:#6E1327;
+    --blood-soft:#F7E9EB;
+    /* geoxygeneerd: juist antwoord */
+    --ok:#1C7A5B;
+    --ok-soft:#E9F4EF;
+    /* fout antwoord */
+    --wrong:#C62B3E;
+    --wrong-soft:#FDECEE;
+    --r:12px;
+    --pad:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 var(--pad) 56px}
+
+  /* ---------- top bar ---------- */
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 0 10px;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:22px;
+  }
+  .back{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--muted);text-decoration:none;
+    font-size:14px;font-weight:500;
+    padding:10px 12px 10px 0;
+    border-radius:var(--r);
+    transition:color .15s ease;
+  }
+  .back:hover{color:var(--blood)}
+  .brand{font-size:12px;color:#A08A90}
+
+  /* ---------- vat als voortgangsindicator ---------- */
+  .vessel{display:flex;gap:2px;height:9px;margin:0 0 8px}
+  .seg{
+    flex:1;background:var(--tint-2);
+    transition:background .35s ease;
+  }
+  .seg:first-child{border-radius:6px 0 0 6px}
+  .seg:last-child{border-radius:0 6px 6px 0}
+  .seg.done{background:var(--blood-dark)}
+  .seg.now{background:var(--blood)}
+  .count{font-size:13px;color:var(--muted);margin:0 0 20px}
+
+  /* ---------- typografie ---------- */
+  h1{font-size:27px;line-height:1.2;letter-spacing:-.02em;font-weight:650;margin:0 0 6px}
+  h1:focus,h2:focus{outline:none}
+  .lede{color:var(--muted);margin:0 0 26px;font-size:15.5px}
+  .vignette{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:16.5px;line-height:1.62;color:#4A3840;
+    margin:0 0 14px;padding-left:14px;
+    border-left:2px solid var(--blood);
+  }
+  .stem{font-size:19px;line-height:1.38;font-weight:600;margin:0 0 18px;letter-spacing:-.01em}
+
+  /* ---------- recap ---------- */
+  .recap{list-style:none;margin:0 0 28px;padding:0}
+  .recap li{
+    padding:12px 0 12px 15px;
+    border-left:2px solid var(--line);
+    font-size:15px;color:#4A3840;
+  }
+  .recap li + li{margin-top:2px}
+  .recap b{color:var(--text);font-weight:600}
+
+  /* ---------- antwoordopties ---------- */
+  .opts{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;
+    width:100%;min-height:52px;padding:13px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    color:var(--text);
+    font:inherit;font-size:15.5px;line-height:1.4;
+    text-align:left;cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:#C9A9AF;background:var(--tint)}
+  .opt:disabled{cursor:default}
+  .key{
+    flex:0 0 22px;height:22px;margin-top:1px;
+    display:grid;place-items:center;
+    border:1px solid var(--line);border-radius:6px;
+    font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
+  }
+  .opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.ok .key{border-color:var(--ok);color:#FFFFFF;background:var(--ok);font-size:13px}
+  .opt.bad{border-color:var(--wrong);background:var(--wrong-soft)}
+  .opt.bad .key{border-color:var(--wrong);color:#FFFFFF;background:var(--wrong);font-size:13px}
+  .opt.dim{opacity:.66}
+  .why{margin:9px 0 0;padding:0;font-size:14px;line-height:1.5;color:var(--muted)}
+  .opt.ok .why{color:#16624A}
+  .opt.bad .why{color:#98202F}
+  .col{display:flex;flex-direction:column;min-width:0}
+
+  /* ---------- verdict en knoppen ---------- */
+  .verdict{font-size:14.5px;font-weight:600;margin:0 0 14px}
+  .verdict.good{color:var(--ok)}
+  .verdict.poor{color:var(--wrong)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:100%;min-height:52px;padding:14px 20px;
+    border-radius:var(--r);border:1px solid transparent;
+    font:inherit;font-size:16px;font-weight:600;
+    cursor:pointer;text-decoration:none;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .btn-primary{background:var(--blood);color:#FFF8F9;border-color:var(--blood)}
+  .btn-primary:hover{background:var(--blood-dark);border-color:var(--blood-dark)}
+  .btn-ghost{background:var(--paper);color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:#C9A9AF;background:var(--tint)}
+  .btn + .btn{margin-top:10px}
+  .hint{font-size:12.5px;color:#A08A90;margin:14px 0 0;text-align:center}
+
+  /* ---------- eindscherm ---------- */
+  .score{display:flex;align-items:baseline;gap:12px;padding:20px 0 4px}
+  .score b{font-size:44px;font-weight:650;letter-spacing:-.03em;line-height:1;color:var(--blood)}
+  .score span{font-size:15px;color:var(--muted)}
+  .msg{color:#4A3840;margin:8px 0 26px;font-size:15.5px}
+  .review{margin:0 0 24px}
+  .review h2{font-size:15px;font-weight:600;color:var(--muted);margin:0 0 12px}
+  .miss{
+    background:var(--tint);border:1px solid var(--line);
+    border-radius:var(--r);padding:14px;margin-bottom:10px;
+  }
+  .miss p{margin:0 0 6px;font-size:15px;line-height:1.4;font-weight:600}
+  .miss .fix{margin:0 0 12px;font-size:14px;color:var(--muted);line-height:1.5}
+  .miss .fix em{color:#16624A;font-style:normal}
+  .jump{
+    display:inline-flex;align-items:center;gap:8px;
+    min-height:44px;padding:10px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;
+    color:var(--text);text-decoration:none;font-size:14px;font-weight:500;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .jump:hover{border-color:var(--blood);background:var(--blood-soft)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--blood);flex:0 0 auto}
+
+  :focus-visible{outline:2px solid var(--blood-dark);outline-offset:2px;border-radius:4px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+  @media (min-width:600px){:root{--pad:24px} h1{font-size:31px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <a class="back" id="backLink" href="#" target="_blank" rel="noopener">← Terug naar de video</a>
+    <span class="brand">LUCID · Vaatheelkunde</span>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD — hier pas je alles aan. De renderlogica eronder blijft ongemoeid.
+
+   t = het moment in de video waar het juiste antwoord gezegd wordt.
+       Schrijf het als "m:ss" of "u:mm:ss" (bv. "4:35"), of als een
+       getal in seconden (bv. 275). Beide werken.
+
+   De volgorde van de opties wordt bij het starten altijd door elkaar
+   gehusseld, dus de plaats van het juiste antwoord in deze lijst is
+   voor de student niet zichtbaar.
+   ========================================================================= */
+
+const QUIZ = {
+  videoUrl: "https://youtu.be/rItwpgjY6AI?si=teMWVcq2B6S6e8Pa",
+  title: "Vaatheelkunde 6 — aneurysma's",
+  lede: "Tien vragen over de video. Kies een antwoord, lees waarom elke optie klopt of niet, en spring achteraf terug naar het stuk dat je gemist hebt.",
+
+  recap: [
+    "<b>Definitie en indeling.</b> Een aneurysma is een permanente verbreding van een bloedvat tot méér dan anderhalf keer de normale diameter, dus elke arterie heeft een eigen drempel: ≥30 mm infrarenale aorta, ≥45 mm aorta descendens, ≥15 mm arteria poplitea. Sacculair (uitstulping aan één zijde) geldt als gevaarlijker dan fusiform (verwijd over de hele omtrek). Een echt aneurysma bevat nog álle vaatwandlagen, een vals aneurysma niet.",
+    "<b>Waarom het scheurt.</b> De wand verzwakt, het vat zet lokaal uit, en dan speelt de wet van Laplace: wandspanning = druk maal straal. Hoe wijder het vat, hoe hoger de wandspanning bij dezelfde bloeddruk. Het ruptuurrisico per jaar loopt op van 1% bij 40 mm naar 4% bij 50 mm, 10% bij 60 mm en 20% bij 70 mm.",
+    "<b>Risicofactoren en groei.</b> Leeftijd, mannelijk geslacht, familiale voorgeschiedenis (reden om broers en zussen te screenen) en aangeboren bindweefselaandoeningen zoals Marfan. Roken is dé beïnvloedbare factor: rokers krijgen méér aneurysma's en die groeien ook sneller. Gemiddelde groei 2 mm per jaar, sneller naarmate het aneurysma groter is, en net trager bij diabetes.",
+    "<b>Diagnose vóór de ruptuur.</b> Een AAA is bijna altijd asymptomatisch en wordt meestal toevallig ontdekt; uitzonderingen zijn palpatiepijn, rug- of buikpijn en embolisatie met blauwe tenen. De ruptuurtriade is een pulsatiele abdominale massa, hevige buik- of rugpijn en tekenen van shock, met een mortaliteit rond 75%. Klinisch onderzoek en echografie eerst, CT pas wanneer je een behandeling overweegt.",
+    "<b>Behandelen.</b> Electief vanaf 55 mm bij mannen en 50 mm bij vrouwen en Aziaten, mee bepaald door de fitheid en de wens van de patiënt. Open herstel met kunststofprothese is definitief maar zwaarder rond de ingreep (30-dagenmortaliteit 3 tot 6%); EVAR heeft een lager risico op korte termijn (1 tot 2%) maar vraagt vaker een herinterventie en levenslange opvolging wegens endoleak."
+  ],
+
+  questions: [
+    {
+      t: "1:34",
+      vignette: "Bij een 68-jarige man wordt tijdens een CT voor nierstenen toevallig een infrarenale aorta van 32 mm gemeten. Hij heeft geen klachten.",
+      stem: "Hoe interpreteer je deze bevinding?",
+      options: [
+        { text: "Dit is per definitie een aneurysma, want voor de infrarenale aorta ligt de drempel op 30 mm — behandelen is nu niet aan de orde, opvolgen wel.",
+          correct: true,
+          why: "Juist. Een aneurysma is een permanente verbreding tot meer dan anderhalf keer de normale diameter, waardoor elke arterie een eigen drempeldiameter heeft." },
+        { text: "Nog geen aneurysma: pas vanaf 45 mm spreek je van een verwijde aorta.",
+          correct: false,
+          why: "Drempels verwisseld: 45 mm geldt voor de aorta descendens, niet voor de infrarenale aorta." },
+        { text: "Nog geen aneurysma, want daarvoor is minstens een verdubbeling van de normale diameter nodig.",
+          correct: false,
+          why: "De definitie wordt opgerekt: het criterium is anderhalf keer de normale diameter, niet twee keer." },
+        { text: "Nog geen aneurysma, want hij heeft geen klachten en symptomen horen bij de definitie.",
+          correct: false,
+          why: "Denkfout: de definitie is puur morfologisch. Een AAA is net bijna altijd asymptomatisch tot het scheurt." }
+      ]
+    },
+    {
+      t: "9:41",
+      vignette: "Twee dagen na een coronaire catheterisatie via de rechterlies voelt u daar een pulsatiele zwelling. Op echo circuleert er bloed in een holte naast de a. femoralis, begrensd door het omliggende weefsel.",
+      stem: "Welke uitspraak over dit letsel en over de indeling van aneurysma's klopt?",
+      options: [
+        { text: "Een sacculair aneurysma is verwijd over de hele omtrek van het vat, een fusiform aneurysma stulpt uit aan één zijde.",
+          correct: false,
+          why: "De twee vormen staan omgewisseld: sacculair is de zakvormige uitstulping aan één zijde, fusiform is de verwijding over de hele omtrek." },
+        { text: "Het gaat om een vals aneurysma: de wand bestaat niet meer uit de oorspronkelijke vaatwand, maar bijvoorbeeld uit omliggend weefsel.",
+          correct: true,
+          why: "Juist. Een punctie in de lies bij een catheterisatie is hét klassieke voorbeeld van een pseudo-aneurysma." },
+        { text: "Het gaat om een echt aneurysma, want er circuleert bloed in de holte.",
+          correct: false,
+          why: "Circulerend bloed zegt niets over de wand. Een echt aneurysma heeft een wand die nog álle lagen van het bloedvat bevat, en dat is hier niet zo." },
+        { text: "Van de twee vormen wordt het fusiforme type doorgaans als het gevaarlijkste beschouwd.",
+          correct: false,
+          why: "Omgekeerd: het sacculaire type wordt doorgaans als gevaarlijker beschouwd." }
+      ]
+    },
+    {
+      t: "2:22",
+      vignette: "",
+      stem: "Waarom stijgt het ruptuurrisico zo sterk naarmate een aneurysma groter wordt?",
+      options: [
+        { text: "Omdat de wandspanning omgekeerd evenredig is met de straal, zodat de wand bij een wijder vat sneller bezwijkt.",
+          correct: false,
+          why: "De relatie staat omgekeerd: de wandspanning neemt net toe met de straal. De wand verdunt inderdaad, maar dat is het gevolg, niet de formule." },
+        { text: "Omdat de bloeddruk in een verwijd segment hoger ligt dan in de rest van de aorta.",
+          correct: false,
+          why: "Denkfout: niet de druk stijgt lokaal, wel de straal. Bij dezelfde bloeddruk levert een grotere straal al een hogere wandspanning op." },
+        { text: "Volgens de wet van Laplace is de wandspanning gelijk aan de druk maal de straal, dus krijgt een wijder vat bij dezelfde bloeddruk een hogere wandspanning.",
+          correct: true,
+          why: "Juist. Dat vertaalt zich meteen in cijfers: ongeveer 1% ruptuurrisico per jaar bij 40 mm, tegenover 10% bij 60 mm en 20% bij 70 mm." },
+        { text: "Omdat een aneurysma bij verdere groei sacculair wordt, en die vorm is gevaarlijker.",
+          correct: false,
+          why: "Twee assen door elkaar: vorm en diameter staan los van elkaar. Een fusiform aneurysma kan verder groeien zonder ooit sacculair te worden." }
+      ]
+    },
+    {
+      t: "3:29",
+      vignette: "Een 66-jarige man rookt een pakje per dag. Zijn oudere broer werd vorig jaar geopereerd aan een AAA. Zelf heeft hij type 2 diabetes.",
+      stem: "Welke uitspraak over zijn risicoprofiel en over de groei van een AAA klopt?",
+      options: [
+        { text: "Zijn diabetes zal de groei van een eventueel aneurysma versnellen.",
+          correct: false,
+          why: "Merkwaardig genoeg net omgekeerd: bij een diabetespatiënt groeit een aneurysma trager." },
+        { text: "Roken is dé beïnvloedbare risicofactor: rokers krijgen niet alleen méér aneurysma's, die groeien ook sneller.",
+          correct: true,
+          why: "Juist. En zijn familiale voorgeschiedenis is meteen een reden om bij een AAA-patiënt ook de broers en zussen te screenen." },
+        { text: "Een AAA in de familie is niet relevant zolang hij zelf geen klachten heeft.",
+          correct: false,
+          why: "Familiale voorgeschiedenis is net een van de kernrisicofactoren, naast leeftijd en mannelijk geslacht — en klachten ontbreken bij een AAA vrijwel altijd." },
+        { text: "Het aantal AAA's is de laatste twintig jaar toegenomen, ondanks de daling van het aantal rokers.",
+          correct: false,
+          why: "Feitelijk fout: het aantal AAA's daalt juist, vooral doordat mensen minder roken en meer statines en bloeddrukmedicatie nemen." }
+      ]
+    },
+    {
+      t: "4:35",
+      vignette: "Een 73-jarige man komt op consultatie met twee blauw verkleurde tenen links. Hij heeft geen buikpijn. Op echo blijkt er een infrarenaal aneurysma van 48 mm te bestaan.",
+      stem: "Welke uitspraak over de klachten bij een AAA past hier het best?",
+      options: [
+        { text: "Blauwe tenen sluiten het aneurysma als oorzaak uit, want een AAA geeft geen distale klachten.",
+          correct: false,
+          why: "Te absoluut: embolisatie van kleine klontertjes vanuit de aneurysmazak is net een gekende oorzaak van blauwe tenen." },
+        { text: "Dit is een van de uitzonderingen op de regel: er emboliseren klontertjes naar distaal, en zo'n symptomatisch aneurysma behandel je sneller.",
+          correct: true,
+          why: "Juist. Een AAA is bijna altijd asymptomatisch tot het scheurt; palpatiepijn, rug- of buikpijn en embolisatie zijn de uitzonderingen die je sneller doen ingrijpen." },
+        { text: "Zonder buikpijn mag je het aneurysma als volledig asymptomatisch beschouwen en op de gewone termijn verder opvolgen.",
+          correct: false,
+          why: "Denkfout: de embolisatie ís het symptoom. Het aneurysma is dus symptomatisch, ook al doet de buik geen pijn." },
+        { text: "De meeste AAA's worden zo ontdekt: doordat de patiënt met klachten komt.",
+          correct: false,
+          why: "Omgekeerd: een AAA wordt meestal toevallig ontdekt op een scan die om een heel andere reden gemaakt werd." }
+      ]
+    },
+    {
+      t: "4:55",
+      vignette: "Een 76-jarige man komt op spoed met hevige buikpijn die uitstraalt naar de rug. Hij is bleek en klam, met een bloeddruk van 85/50. Bij palpatie voelt u een pulsatiele massa in de buik.",
+      stem: "Welke uitspraak past het best bij dit beeld?",
+      options: [
+        { text: "Dit is de klassieke triade van een geruptureerd AAA — pulsatiele abdominale massa, hevige buik- of rugpijn en tekenen van shock — met een mortaliteit rond 75%.",
+          correct: true,
+          why: "Juist. Precies daarom is de hele strategie erop gericht een AAA te vinden en te behandelen vóór het scheurt." },
+        { text: "De mortaliteit van een ruptuur ligt in dezelfde grootteorde als die van een geplande ingreep.",
+          correct: false,
+          why: "Het verschil is enorm: ongeveer 75% bij een ruptuur, tegenover amper 1 tot 2% bij een gepland endovasculair herstel." },
+        { text: "Zonder braken en zonder koorts is een ruptuur weinig waarschijnlijk.",
+          correct: false,
+          why: "Er worden criteria bijverzonnen die niet tot de triade behoren. Pijn, pulsatiele massa en shock volstaan om meteen aan een ruptuur te denken." },
+        { text: "Op CT verwacht je bij een ruptuur het aneurysma zónder bloed errond, want het bloed blijft in de zak.",
+          correct: false,
+          why: "Net het tegendeel: op CT zie je het aneurysma met daarrond een grote hoeveelheid bloed." }
+      ]
+    },
+    {
+      t: "5:12",
+      vignette: "Bij een 72-jarige man voelt u tussen twee handen een pulsatiele massa in de buik. Hij is verder klachtenvrij en hemodynamisch stabiel.",
+      stem: "Hoe pakt u de verdere diagnostiek aan?",
+      options: [
+        { text: "Het klinisch onderzoek volstaat om de diameter in te schatten en de opvolgtermijn vast te leggen.",
+          correct: false,
+          why: "Palpatie kan een aneurysma dóén vermoeden, maar meten doe je met beeldvorming — de meeste AAA's worden trouwens niet klinisch, maar toevallig op beeldvorming ontdekt." },
+        { text: "Meteen een CT-scan, want met echografie kan je de aorta niet betrouwbaar in beeld brengen.",
+          correct: false,
+          why: "Feitelijk fout: de echografie is net het aangewezen eerste onderzoek, en ook het werkpaard voor de opvolging." },
+        { text: "Beeldvorming is pas zinvol zodra er klachten bijkomen.",
+          correct: false,
+          why: "Precies de omgekeerde logica: bij een AAA komen de klachten meestal pas bij de ruptuur, en dan ben je te laat." },
+        { text: "Eerst een echografie; een CT-scan maakt u pas wanneer u een behandeling overweegt, om alles precies op te meten.",
+          correct: true,
+          why: "Juist. De echo is het eerste beeldvormend onderzoek, de CT dient voor de exacte opmeting met het oog op een ingreep." }
+      ]
+    },
+    {
+      t: "5:30",
+      vignette: "De overheid wil de sterfte door een geruptureerd abdominaal aorta-aneurysma naar beneden halen.",
+      stem: "Welke maatregel draagt daar volgens deze les het MEEST toe bij?",
+      options: [
+        { text: "De mortaliteit van de urgente ingreep bij een ruptuur verlagen.",
+          correct: false,
+          why: "Je grijpt hier in aan het einde van de keten, waar de marge het kleinst is: een ruptuur betekent nog altijd ongeveer 75% mortaliteit." },
+        { text: "Screening, zodat aneurysma's tijdig gevonden en electief behandeld worden vóór ze scheuren.",
+          correct: true,
+          why: "Juist. Volgens de Europese richtlijn screen je mannen van 65 jaar (zeker rokers en ex-rokers), en mannen en vrouwen met een familielid met een AAA, met een perifeer aneurysma of met een orgaantransplantatie." },
+        { text: "De mortaliteit van de electieve ingreep verder verlagen.",
+          correct: false,
+          why: "Daar valt weinig te winnen: die ligt al op 3 tot 6% bij open herstel en 1 tot 2% bij EVAR. Het probleem zit bij de patiënten die nooit electief geopereerd raakten." },
+        { text: "Investeren in medicatie die de groei van het aneurysma stopt.",
+          correct: false,
+          why: "Zo'n medicijn bestaat vandaag nog niet. Rookstop, gezonde voeding en beweging blijven zinvol, maar houden de groei niet tegen." }
+      ]
+    },
+    {
+      t: "6:39",
+      vignette: "Bij een fitte 63-jarige man toont de CTA een infrarenaal aneurysma van 85 mm lengte en 51 mm anteroposterieure diameter.",
+      stem: "Wat is op dit moment het aangewezen beleid?",
+      options: [
+        { text: "Opereren, want met 85 mm is de drempel ruimschoots overschreden.",
+          correct: false,
+          why: "Verkeerde maat: de drempel slaat op de diameter van het aneurysma, niet op de lengte ervan." },
+        { text: "Opereren, want vroeger ingrijpen voorkomt verdere groei en dus problemen later.",
+          correct: false,
+          why: "Precies de denkfout die de les weerlegt: vroeger opereren levert enkel extra kosten en risico's op, zonder winst." },
+        { text: "Nog geen electieve ingreep: bij een man ligt de drempel op 55 mm, dus verder opvolgen en de medische behandeling optimaliseren.",
+          correct: true,
+          why: "Juist. De weegschaal is telkens dat het risico van de ingreep kleiner moet zijn dan de winst, en die weegschaal slaat hier nog niet door." },
+        { text: "De drempel is hoe dan ook 55 mm; geslacht en etniciteit spelen daarin geen rol.",
+          correct: false,
+          why: "Bij vrouwen en Aziaten ligt de drempel lager, op 50 mm. Daarnaast wegen ook de fitheid en de wens van de patiënt mee, via shared decision making." }
+      ]
+    },
+    {
+      t: "7:37",
+      vignette: "Georges bereikt de drempeldiameter en is fit genoeg voor een ingreep. Hij vraagt of hij beter kiest voor een open herstel of voor EVAR.",
+      stem: "Welke uitspraak geef je hem mee?",
+      options: [
+        { text: "EVAR geeft het laagste risico tíjdens de ingreep en een korte opname, maar vraagt vaker een herinterventie en levenslange opvolging met beeldvorming, onder meer wegens endoleak.",
+          correct: true,
+          why: "Juist. Wil hij zo weinig mogelijk herinterventies, dan ga je richting open herstel; wil hij het laagste risico rond de ingreep, dan richting EVAR — op voorwaarde dat hij trouw op controle komt." },
+        { text: "Na een open herstel is levenslange opvolging nodig wegens het risico op endoleak.",
+          correct: false,
+          why: "De technieken staan omgewisseld: de endoleak is net het typische probleem van EVAR, terwijl het open herstel definitief is." },
+        { text: "Na EVAR is het risico op ruptuur nul, want de druk op de aneurysmazak valt volledig weg.",
+          correct: false,
+          why: "Te absoluut: het postoperatieve ruptuurrisico na EVAR is niet nul, precies omdat er via een endoleak toch nog bloed in de zak kan komen." },
+        { text: "Open herstel is achterhaald: de langetermijnresultaten van EVAR zijn duidelijk beter.",
+          correct: false,
+          why: "Omgekeerd: bij jonge, fitte patiënten blijft open herstel voorlopig de gouden standaard door de goede langetermijnresultaten, en niet iedereen heeft de geschikte anatomie voor EVAR." }
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   RENDERLOGICA — hieronder staat geen inhoud meer.
+   ========================================================================= */
+
+(function () {
+  "use strict";
+
+  var app = document.getElementById("app");
+  var backLink = document.getElementById("backLink");
+  backLink.href = QUIZ.videoUrl;
+
+  var state = { order: [], optOrder: [], current: 0, answers: [], started: false };
+  var LETTERS = "ABCDEFGH";
+
+  function label(i) { return LETTERS.charAt(i) || String(i + 1); }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  /* accepteert 275, "4:35" of "1:04:35" */
+  function toSeconds(t) {
+    if (typeof t === "number") return Math.max(0, Math.round(t));
+    var parts = String(t).trim().split(":").map(function (p) { return parseInt(p, 10) || 0; });
+    var s = 0;
+    for (var i = 0; i < parts.length; i++) s = s * 60 + parts[i];
+    return Math.max(0, s);
+  }
+  function videoAt(t) {
+    var sep = QUIZ.videoUrl.indexOf("?") === -1 ? "?" : "&";
+    return QUIZ.videoUrl + sep + "t=" + toSeconds(t);
+  }
+  function focusFirst() {
+    var h = app.querySelector("[data-focus]");
+    if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- startscherm ---------- */
+  function renderStart() {
+    var items = QUIZ.recap.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+    app.innerHTML =
+      '<h1 data-focus>' + esc(QUIZ.title) + '</h1>' +
+      '<p class="lede">' + esc(QUIZ.lede) + '</p>' +
+      '<ul class="recap">' + items + '</ul>' +
+      '<button class="btn btn-primary" id="start">Start de ' + QUIZ.questions.length + ' vragen</button>' +
+      '<p class="hint">Toets A tot D om te antwoorden, Enter voor de volgende vraag.</p>';
+    document.getElementById("start").addEventListener("click", function () { begin(false); });
+    focusFirst();
+  }
+
+  /* vragen in vaste volgorde bij de eerste beurt, willekeurig bij een nieuwe
+     poging; de opties worden altijd gehusseld */
+  function begin(randomiseQuestions) {
+    var n = QUIZ.questions.length;
+    state.order = randomiseQuestions ? shuffle(range(n)) : range(n);
+    state.optOrder = state.order.map(function (qi) {
+      return shuffle(range(QUIZ.questions[qi].options.length));
+    });
+    state.answers = new Array(n).fill(null);
+    state.current = 0;
+    state.started = true;
+    renderQuestion();
+  }
+
+  /* ---------- vraagscherm ---------- */
+  function renderQuestion() {
+    var pos = state.current;
+    var q = QUIZ.questions[state.order[pos]];
+    var oo = state.optOrder[pos];
+    var total = state.order.length;
+
+    var segs = "";
+    for (var s = 0; s < total; s++) {
+      var cls = s < pos ? "seg done" : (s === pos ? "seg now" : "seg");
+      segs += '<div class="' + cls + '"></div>';
+    }
+
+    var opts = oo.map(function (oi, idx) {
+      var o = q.options[oi];
+      return '<button class="opt" data-idx="' + idx + '" data-opt="' + oi + '">' +
+               '<span class="key">' + label(idx) + '</span>' +
+               '<span class="col"><span>' + esc(o.text) + '</span>' +
+               '<span class="why" hidden></span></span>' +
+             '</button>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="vessel" role="presentation">' + segs + '</div>' +
+      '<p class="count">Vraag ' + (pos + 1) + ' van ' + total + '</p>' +
+      (q.vignette ? '<p class="vignette">' + esc(q.vignette) + '</p>' : '') +
+      '<h2 class="stem" data-focus>' + esc(q.stem) + '</h2>' +
+      '<div class="opts" id="opts">' + opts + '</div>' +
+      '<p class="verdict" id="verdict" aria-live="polite"></p>' +
+      '<div id="actions"></div>';
+
+    Array.prototype.slice.call(app.querySelectorAll(".opt")).forEach(function (b) {
+      b.addEventListener("click", function () { answer(parseInt(b.dataset.opt, 10)); });
+    });
+    focusFirst();
+  }
+
+  function answer(chosenOpt) {
+    var pos = state.current;
+    if (state.answers[pos] !== null) return;
+    state.answers[pos] = chosenOpt;
+
+    var q = QUIZ.questions[state.order[pos]];
+    var isRight = q.options[chosenOpt].correct === true;
+    var buttons = Array.prototype.slice.call(app.querySelectorAll(".opt"));
+    var correctIdx = 0;
+
+    buttons.forEach(function (b, i) {
+      var oi = parseInt(b.dataset.opt, 10);
+      var o = q.options[oi];
+      b.disabled = true;
+      if (o.correct) { b.classList.add("ok"); correctIdx = i; }
+      else if (oi === chosenOpt) b.classList.add("bad");
+      else b.classList.add("dim");
+      var key = b.querySelector(".key");
+      if (o.correct) key.textContent = "\u2713";
+      else if (oi === chosenOpt) key.textContent = "\u2715";
+      var why = b.querySelector(".why");
+      why.textContent = o.why;
+      why.hidden = false;
+    });
+
+    var v = document.getElementById("verdict");
+    v.className = "verdict " + (isRight ? "good" : "poor");
+    v.textContent = isRight ? "Juist." : "Fout — het juiste antwoord is optie " + label(correctIdx) + ".";
+
+    var last = pos === state.order.length - 1;
+    document.getElementById("actions").innerHTML =
+      '<button class="btn btn-primary" id="next">' + (last ? "Bekijk je resultaat" : "Volgende vraag") + '</button>';
+    var next = document.getElementById("next");
+    next.addEventListener("click", advance);
+    next.focus({ preventScroll: true });
+  }
+
+  function advance() {
+    if (state.current === state.order.length - 1) renderResults();
+    else { state.current++; renderQuestion(); }
+  }
+
+  /* ---------- eindscherm ---------- */
+  function renderResults() {
+    state.started = false;
+    var total = state.order.length;
+    var wrong = [];
+    var score = 0;
+
+    state.order.forEach(function (qi, pos) {
+      var q = QUIZ.questions[qi];
+      var chosen = state.answers[pos];
+      if (chosen !== null && q.options[chosen].correct) score++;
+      else wrong.push(q);
+    });
+
+    var pct = Math.round((score / total) * 100);
+    var msg = pct === 100 ? "Alles juist. Deze les zit."
+            : pct >= 75 ? "Stevige basis. Neem de misgelopen stukjes nog eens door."
+            : pct >= 50 ? "De helft zit er. De fragmenten hieronder zijn je snelste winst."
+            : "Nog wat werk. Bekijk de aangeduide stukken opnieuw en probeer daarna nog eens.";
+
+    var reviewHtml = "";
+    if (wrong.length) {
+      reviewHtml = '<div class="review"><h2>Wat nog niet zat</h2>' +
+        wrong.map(function (q) {
+          var right = q.options.filter(function (o) { return o.correct; })[0];
+          return '<div class="miss">' +
+                   '<p>' + esc(q.stem) + '</p>' +
+                   '<p class="fix"><em>' + esc(right.text) + '</em></p>' +
+                   '<a class="jump" href="' + videoAt(q.t) + '" target="_blank" rel="noopener">' +
+                     '<span class="dot"></span>Bekijk dit stuk opnieuw</a>' +
+                 '</div>';
+        }).join("") + '</div>';
+    }
+
+    app.innerHTML =
+      '<h1 data-focus>Resultaat</h1>' +
+      '<div class="score"><b>' + score + '/' + total + '</b><span>' + pct + '% juist</span></div>' +
+      '<p class="msg">' + esc(msg) + '</p>' +
+      reviewHtml +
+      '<button class="btn btn-primary" id="again">Opnieuw proberen</button>' +
+      '<a class="btn btn-ghost" href="' + QUIZ.videoUrl + '" target="_blank" rel="noopener">Terug naar de video</a>';
+
+    document.getElementById("again").addEventListener("click", function () { begin(true); });
+    focusFirst();
+  }
+
+  /* ---------- toetsenbord ---------- */
+  document.addEventListener("keydown", function (e) {
+    if (!state.started) return;
+    if (e.target && (e.target.tagName === "A" || e.target.id === "next")) return;
+    var pos = state.current;
+    var answered = state.answers[pos] !== null;
+
+    if (!answered) {
+      var idx = -1;
+      if (e.key >= "1" && e.key <= "9") idx = parseInt(e.key, 10) - 1;
+      else if (e.key.length === 1) idx = LETTERS.indexOf(e.key.toUpperCase());
+      if (idx >= 0) {
+        var b = app.querySelector('.opt[data-idx="' + idx + '"]');
+        if (b) { e.preventDefault(); answer(parseInt(b.dataset.opt, 10)); return; }
+      }
+    }
+    if (e.key === "Enter" && answered) { e.preventDefault(); advance(); }
+  });
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
