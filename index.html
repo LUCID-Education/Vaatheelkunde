@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oefenvragen vaatheelkunde — LUCID</title>
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --tint:#FBF6F5;
+    --tint-2:#F5EBEA;
+    --line:#E7DAD9;
+    --line-soft:#EFE5E4;
+    --text:#241A1E;
+    --muted:#786169;
+    --blood:#8C1D33;
+    --blood-dark:#6E1327;
+    --blood-soft:#F7E9EB;
+    --r:12px;
+    --pad:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 var(--pad) 56px}
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 0 10px;border-bottom:1px solid var(--line-soft);margin-bottom:26px;
+  }
+  .brand{font-size:12px;color:#A08A90}
+  h1{font-size:28px;line-height:1.18;letter-spacing:-.02em;font-weight:650;margin:0 0 8px}
+  .lede{color:var(--muted);font-size:15.5px;margin:0 0 28px}
+
+  .list{list-style:none;margin:0 0 30px;padding:0}
+  .list li{margin-bottom:10px}
+  .card{
+    display:flex;gap:14px;align-items:flex-start;
+    padding:15px 16px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    color:var(--text);text-decoration:none;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  a.card:hover{border-color:var(--blood);background:var(--blood-soft)}
+  .num{
+    flex:0 0 30px;height:30px;
+    display:grid;place-items:center;
+    border-radius:8px;
+    background:var(--blood);color:#FFF8F9;
+    font-size:14px;font-weight:600;
+    font-variant-numeric:tabular-nums;
+  }
+  .col{display:flex;flex-direction:column;min-width:0}
+  .name{font-size:16px;font-weight:600;line-height:1.3}
+  .meta{font-size:13.5px;color:var(--muted);margin-top:3px}
+
+  .card.soon{background:var(--tint);border-style:dashed;color:var(--muted)}
+  .card.soon .num{background:var(--tint-2);color:var(--muted)}
+  .card.soon .name{font-weight:500}
+
+  .note{
+    background:var(--tint);border:1px solid var(--line);border-radius:var(--r);
+    padding:15px 16px;font-size:14.5px;line-height:1.55;color:#4A3840;
+  }
+  .note p{margin:0}
+  .note p + p{margin-top:9px}
+  .foot{margin-top:26px;font-size:13.5px;color:var(--muted)}
+  .foot a{color:var(--blood);text-decoration:none;border-bottom:1px solid var(--blood-soft)}
+  .foot a:hover{border-bottom-color:var(--blood)}
+  :focus-visible{outline:2px solid var(--blood-dark);outline-offset:2px;border-radius:4px}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+  @media (min-width:600px){:root{--pad:24px} h1{font-size:32px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="brand">LUCID · Vaatheelkunde</span></div>
+
+  <h1>Oefenvragen vaatheelkunde</h1>
+  <p class="lede">Bij elke video van de reeks hoort een korte zelftest. Kijk eerst de video, test daarna wat blijven hangen is.</p>
+
+  <ul class="list" id="list"></ul>
+
+  <div class="note">
+    <p>Deze vragen zijn een hulpmiddel naast de lessen, geen vervanging ervan. Ze zeggen niets over wat wel of niet gekend moet zijn voor het examen. Volg daarvoor de lessen en de PowerPoint van Prof. Van Herzeele.</p>
+    <p>Een fout gespot of een vraag die onduidelijk is? Meld het via de feedbacklink in de beschrijving van de video.</p>
+  </div>
+
+  <p class="foot">Gemaakt voor studenten 1e master geneeskunde.</p>
+</div>
+
+<script>
+/* ---- INHOUD: zet een les op beschikbaar door "file" in te vullen ---- */
+const LESSEN = [
+  { nr: 1, titel: "Algemene inleiding",  onderwerp: "Prevalentie, risicofactoren, vaatstelsel, atherosclerose", vragen: 9, file: "les1.html" },
+  { nr: 2, titel: "Les 2",               onderwerp: "",  vragen: 0, file: "" },
+  { nr: 3, titel: "Les 3",               onderwerp: "",  vragen: 0, file: "" },
+  { nr: 4, titel: "Les 4",               onderwerp: "",  vragen: 0, file: "" },
+  { nr: 5, titel: "Les 5",               onderwerp: "",  vragen: 0, file: "" },
+  { nr: 6, titel: "Les 6",               onderwerp: "",  vragen: 0, file: "" },
+  { nr: 7, titel: "Les 7",               onderwerp: "",  vragen: 0, file: "" }
+];
+
+/* ---- rendering ---- */
+(function () {
+  var esc = function (s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  };
+  document.getElementById("list").innerHTML = LESSEN.map(function (l) {
+    var meta = l.file
+      ? esc(l.onderwerp) + (l.vragen ? " · " + l.vragen + " vragen" : "")
+      : "Volgt later";
+    var inner =
+      '<span class="num">' + l.nr + '</span>' +
+      '<span class="col"><span class="name">' + esc(l.titel) + '</span>' +
+      '<span class="meta">' + meta + '</span></span>';
+    return l.file
+      ? '<li><a class="card" href="' + l.file + '">' + inner + '</a></li>'
+      : '<li><div class="card soon">' + inner + '</div></li>';
+  }).join("");
+})();
+</script>
+</body>
+</html>
