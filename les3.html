@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oefenvragen — Vaatheelkunde 3: revascularisatie</title>
+<style>
+  :root{
+    /* papier */
+    --paper:#FFFFFF;
+    --tint:#FBF6F5;
+    --tint-2:#F5EBEA;
+    --line:#E7DAD9;
+    --line-soft:#EFE5E4;
+    --text:#241A1E;
+    --muted:#786169;
+    /* bloed: chrome, voortgang, vignet */
+    --blood:#8C1D33;
+    --blood-dark:#6E1327;
+    --blood-soft:#F7E9EB;
+    /* geoxygeneerd: juist antwoord */
+    --ok:#1C7A5B;
+    --ok-soft:#E9F4EF;
+    /* fout antwoord */
+    --wrong:#C62B3E;
+    --wrong-soft:#FDECEE;
+    --r:12px;
+    --pad:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 var(--pad) 56px}
+
+  /* ---------- top bar ---------- */
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 0 10px;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:22px;
+  }
+  .back{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--muted);text-decoration:none;
+    font-size:14px;font-weight:500;
+    padding:10px 12px 10px 0;
+    border-radius:var(--r);
+    transition:color .15s ease;
+  }
+  .back:hover{color:var(--blood)}
+  .brand{font-size:12px;color:#A08A90}
+
+  /* ---------- vat als voortgangsindicator ---------- */
+  .vessel{display:flex;gap:2px;height:9px;margin:0 0 8px}
+  .seg{
+    flex:1;background:var(--tint-2);
+    transition:background .35s ease;
+  }
+  .seg:first-child{border-radius:6px 0 0 6px}
+  .seg:last-child{border-radius:0 6px 6px 0}
+  .seg.done{background:var(--blood-dark)}
+  .seg.now{background:var(--blood)}
+  .count{font-size:13px;color:var(--muted);margin:0 0 20px}
+
+  /* ---------- typografie ---------- */
+  h1{font-size:27px;line-height:1.2;letter-spacing:-.02em;font-weight:650;margin:0 0 6px}
+  h1:focus,h2:focus{outline:none}
+  .lede{color:var(--muted);margin:0 0 26px;font-size:15.5px}
+  .vignette{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:16.5px;line-height:1.62;color:#4A3840;
+    margin:0 0 14px;padding-left:14px;
+    border-left:2px solid var(--blood);
+  }
+  .stem{font-size:19px;line-height:1.38;font-weight:600;margin:0 0 18px;letter-spacing:-.01em}
+
+  /* ---------- recap ---------- */
+  .recap{list-style:none;margin:0 0 28px;padding:0}
+  .recap li{
+    padding:12px 0 12px 15px;
+    border-left:2px solid var(--line);
+    font-size:15px;color:#4A3840;
+  }
+  .recap li + li{margin-top:2px}
+  .recap b{color:var(--text);font-weight:600}
+
+  /* ---------- antwoordopties ---------- */
+  .opts{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;
+    width:100%;min-height:52px;padding:13px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    color:var(--text);
+    font:inherit;font-size:15.5px;line-height:1.4;
+    text-align:left;cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:#C9A9AF;background:var(--tint)}
+  .opt:disabled{cursor:default}
+  .key{
+    flex:0 0 22px;height:22px;margin-top:1px;
+    display:grid;place-items:center;
+    border:1px solid var(--line);border-radius:6px;
+    font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
+  }
+  .opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.ok .key{border-color:var(--ok);color:#FFFFFF;background:var(--ok);font-size:13px}
+  .opt.bad{border-color:var(--wrong);background:var(--wrong-soft)}
+  .opt.bad .key{border-color:var(--wrong);color:#FFFFFF;background:var(--wrong);font-size:13px}
+  .opt.dim{opacity:.66}
+  .why{margin:9px 0 0;padding:0;font-size:14px;line-height:1.5;color:var(--muted)}
+  .opt.ok .why{color:#16624A}
+  .opt.bad .why{color:#98202F}
+  .col{display:flex;flex-direction:column;min-width:0}
+
+  /* ---------- verdict en knoppen ---------- */
+  .verdict{font-size:14.5px;font-weight:600;margin:0 0 14px}
+  .verdict.good{color:var(--ok)}
+  .verdict.poor{color:var(--wrong)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:100%;min-height:52px;padding:14px 20px;
+    border-radius:var(--r);border:1px solid transparent;
+    font:inherit;font-size:16px;font-weight:600;
+    cursor:pointer;text-decoration:none;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .btn-primary{background:var(--blood);color:#FFF8F9;border-color:var(--blood)}
+  .btn-primary:hover{background:var(--blood-dark);border-color:var(--blood-dark)}
+  .btn-ghost{background:var(--paper);color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:#C9A9AF;background:var(--tint)}
+  .btn + .btn{margin-top:10px}
+  .hint{font-size:12.5px;color:#A08A90;margin:14px 0 0;text-align:center}
+
+  /* ---------- eindscherm ---------- */
+  .score{display:flex;align-items:baseline;gap:12px;padding:20px 0 4px}
+  .score b{font-size:44px;font-weight:650;letter-spacing:-.03em;line-height:1;color:var(--blood)}
+  .score span{font-size:15px;color:var(--muted)}
+  .msg{color:#4A3840;margin:8px 0 26px;font-size:15.5px}
+  .review{margin:0 0 24px}
+  .review h2{font-size:15px;font-weight:600;color:var(--muted);margin:0 0 12px}
+  .miss{
+    background:var(--tint);border:1px solid var(--line);
+    border-radius:var(--r);padding:14px;margin-bottom:10px;
+  }
+  .miss p{margin:0 0 6px;font-size:15px;line-height:1.4;font-weight:600}
+  .miss .fix{margin:0 0 12px;font-size:14px;color:var(--muted);line-height:1.5}
+  .miss .fix em{color:#16624A;font-style:normal}
+  .jump{
+    display:inline-flex;align-items:center;gap:8px;
+    min-height:44px;padding:10px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;
+    color:var(--text);text-decoration:none;font-size:14px;font-weight:500;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .jump:hover{border-color:var(--blood);background:var(--blood-soft)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--blood);flex:0 0 auto}
+
+  :focus-visible{outline:2px solid var(--blood-dark);outline-offset:2px;border-radius:4px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+  @media (min-width:600px){:root{--pad:24px} h1{font-size:31px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <a class="back" id="backLink" href="#" target="_blank" rel="noopener">← Terug naar de video</a>
+    <span class="brand">LUCID · Vaatheelkunde</span>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD — hier pas je alles aan. De renderlogica eronder blijft ongemoeid.
+
+   t = het moment in de video waar het juiste antwoord gezegd wordt.
+       Schrijf het als "m:ss" of "u:mm:ss" (bv. "4:35"), of als een
+       getal in seconden (bv. 275). Beide werken.
+
+   De volgorde van de opties wordt bij het starten altijd door elkaar
+   gehusseld, dus de plaats van het juiste antwoord in deze lijst is
+   voor de student niet zichtbaar.
+   ========================================================================= */
+
+const QUIZ = {
+  videoUrl: "https://youtu.be/UZuvjFTsuOw",
+  title: "Vaatheelkunde 3 — revascularisatie: endovasculair en open",
+  lede: "Tien vragen over de video. Kies een antwoord, lees waarom elke optie klopt of niet, en spring achteraf terug naar het stuk dat je gemist hebt.",
+
+  recap: [
+    "<b>Waarom ingrijpen.</b> Zolang de doorbloeding volstaat voor de metabole nood van het weefsel is er geen probleem. Bij een wonde stijgt die nood en overstijgt ze het aanbod. Een ingreep behandelt het symptoom, niet de atherosclerose: rookstop, voeding, beweging, stressreductie, statines en plaatjesremmers blijven de hoeksteen.",
+    "<b>Doel per stadium.</b> Bij claudicatio (geel) een duurzaam resultaat voor wandelafstand en levenskwaliteit. Bij rustpijn en wonden (rood) het been redden — daar mag de doorbloeding later terug wat wegvallen, zolang de wonde ondertussen genezen is.",
+    "<b>Winst tegenover risico.</b> Patiëntenkant: comorbiditeit, heelkundig risico, ernst van de klachten — leeftijd alléén zegt weinig. Letselkant: kort of lang, stenose of occlusie, en vooral de locatie. Twee vuistregels: het meest proximale letsel eerst, en proximaler betekent betere langetermijnresultaten. Bij een bedreigd been is er vaak geen tijd voor een volledige uitwerking: <i>time is limb</i>.",
+    "<b>Endovasculair.</b> Percutane transluminale angioplastie via de Seldinger-techniek: echogeleid prikken in de lies, voerdraad, dan ballon en eventueel stent onder röntgengeleiding. Intraluminaal blijven, bij een verkalkte occlusie soms bewust subintimaal. Vroege verwikkelingen van de manipulatie zelf: recoil, waarbij de vernauwing terugveert, en dissectie. Zolang het bloed goed wegstroomt is een kleine scheur geen probleem; belemmert ze de flow, dan is een stent nodig. Stentkeuze: ballon-expandeerbaar (precies, veel radiale kracht, korte verkalkte letsels) versus zelf-expandeerbaar (herneemt zijn vorm, dus in plooizones). Laat: restenose door intimale hyperplasie, waartegen paclitaxel-gecoate ballonnen en stents selectief worden ingezet.",
+    "<b>Open heelkunde.</b> Endarterectomie: vat openen, plaque met intima en een stuk media weg, sluiten met verwijdingspatch — vooral a. femoralis communis en halsslagader. Bypass: van een gezond stuk vóór naar een gezond stuk na het letsel, met goede inflow én outflow; eigen vena saphena magna is het beste materiaal, kunststof scoort minder, zeker tibiaal. Hoe distaler, hoe minder lang de bypass openblijft.",
+    "<b>Als het misgaat.</b> Endovasculair vooral aan de punctieplaats: hematoom of bloeding (retroperitoneaal onzichtbaar, met shock), pseudo-aneurysma, arterio-veneuze shunt, dissectie; systemisch contrastallergie en nierinsufficiëntie. Open: wondinfectie, lymfelek, zenuwletsel, trombose of infectie van de bypass, en bij aortaheelkunde de aorto-enterische fistel. Faalt de revascularisatie, dan amputeer je zo distaal mogelijk — de knie behouden helpt enorm bij de revalidatie."
+  ],
+
+  questions: [
+    {
+      t: "2:27",
+      vignette: "Yan rookt al zijn hele leven. Vroeger moest hij na een paar honderd meter stoppen door pijn in de kuit; nu wordt hij 's nachts wakker van pijn in zijn voet en heeft hij op zijn grote teen een wondje dat niet geneest.",
+      stem: "Waarom overweeg je bij hem nú een revascularisatie?",
+      options: [
+        { text: "Zijn metabole nood overstijgt de doorbloeding: het weefsel heeft meer bloed nodig om de wonde te laten genezen en om zuurstof en antibiotica aan te voeren.",
+          correct: true,
+          why: "Juist. Zolang de doorbloeding volstaat voor wat het weefsel vraagt, is er geen probleem; de wonde verschuift precies die balans." },
+        { text: "Hij is opgeschoven naar Fontaine drie tot vier, en elk stadium boven Fontaine twee is op zich al een operatie-indicatie.",
+          correct: false,
+          why: "Het stadium wordt hier als schakelaar gebruikt. Het beschrijft de ernst, maar de beslissing blijft een weegschaal van winst tegenover risico bij deze patiënt." },
+        { text: "Omdat hij blijft roken, heeft de conservatieve behandeling geen zin meer en blijft enkel een ingreep over.",
+          correct: false,
+          why: "Denkfout: de conservatieve behandeling wordt afgeschreven. Rookstop, looptraining en medicatie blijven de hoeksteen, óók wanneer je invasief ingrijpt." },
+        { text: "De ingreep is nodig omdat je zo de atherosclerose behandelt die zijn klachten veroorzaakt.",
+          correct: false,
+          why: "Een invasieve ingreep behandelt de symptomen, niet de onderliggende oorzaak: de atherosclerose blijft na de ingreep gewoon bestaan." }
+      ]
+    },
+    {
+      t: "1:56",
+      vignette: "Na een geslaagde ingreep vraagt Yan of hij zijn medicatie mag afbouwen: de vernauwing is toch weggewerkt.",
+      stem: "Wat antwoord je hem?",
+      options: [
+        { text: "De plaatjesremmer mag stoppen zodra de wonde dicht is, want die diende om de wonde te laten helen.",
+          correct: false,
+          why: "Verkeerde indicatie toegeschreven: de plaatjesremmer dient de systemische cardiovasculaire preventie, niet de wondheling." },
+        { text: "De medische behandeling en de gezonde levensstijl blijven de hoeksteen; statines en plaatjesremmers lopen onverminderd door.",
+          correct: true,
+          why: "Juist. De ingreep herstelt de doorbloeding lokaal, maar de systemische atherosclerose loopt door en blijft behandeling vragen." },
+        { text: "Nu de doorbloeding hersteld is, weegt rookstop niet langer zwaar door.",
+          correct: false,
+          why: "Net dan blijft roken de sterkste motor van verdere plaquevorming — én van het opnieuw dichtslibben van de behandelde zone." },
+        { text: "Omdat de ingreep de oorzaak heeft weggenomen, volstaat opvolging zonder verdere behandeling.",
+          correct: false,
+          why: "De kern van de les staat omgedraaid: de ingreep pakt het symptoom aan, niet de oorzaak." }
+      ]
+    },
+    {
+      t: "2:39",
+      vignette: "",
+      stem: "Waarin verschilt het doel van een revascularisatie bij claudicatio van dat bij kritieke lidmaatischemie?",
+      options: [
+        { text: "In beide situaties is een zo lang mogelijk openblijvend resultaat de enige zinvolle maatstaf.",
+          correct: false,
+          why: "Bij een bedreigd been telt vooral of de wonde binnen dat venster geneest; een later verlies van doorbloeding is dan aanvaardbaar." },
+        { text: "Bij claudicatio grijp je in om amputatie te voorkomen, bij kritieke ischemie om de wandelafstand te verbeteren.",
+          correct: false,
+          why: "De twee doelstellingen staan omgewisseld: amputatiepreventie hoort bij de rode zone, wandelafstand bij de gele." },
+        { text: "Bij claudicatio mik je op een duurzaam resultaat voor wandelafstand en levenskwaliteit; bij rustpijn en wonden is het doel het been redden, en mag de doorbloeding later terug wat wegvallen zolang de wonde ondertussen genezen is.",
+          correct: true,
+          why: "Juist. Het eindpunt verschuift van duurzaamheid naar wondheling zodra het been bedreigd is." },
+        { text: "Bij kritieke lidmaatischemie is een resultaat dat na verloop van tijd terugvalt per definitie een mislukking.",
+          correct: false,
+          why: "Te streng geredeneerd: is de wonde genezen vóór de doorbloeding terugvalt, dan heeft de ingreep zijn doel bereikt." }
+      ]
+    },
+    {
+      t: "3:44",
+      vignette: "Een fitte 82-jarige met een bedreigd been heeft zowel een korte stenose in de a. iliaca als een lang occlusietraject in de a. femoralis superficialis.",
+      stem: "Welke uitspraak past bij de manier waarop je hier je strategie bepaalt?",
+      options: [
+        { text: "Je behandelt het meest proximale letsel eerst, en de langetermijnresultaten zijn beter naarmate het letsel proximaler ligt.",
+          correct: true,
+          why: "Juist. Dat zijn de twee vuistregels aan de letselkant, en ze wijzen hier allebei naar de iliacale stenose." },
+        { text: "Op 82 jaar weegt de leeftijd zo zwaar door dat een invasieve aanpak vervalt.",
+          correct: false,
+          why: "Leeftijd alléén zegt weinig: een fitte tachtiger kan sterker zijn dan een zieke vijftiger. Comorbiditeit en heelkundig risico wegen, niet het geboortejaar." },
+        { text: "Je pakt eerst het langste, meest distale letsel aan, want daar zit de grootste weerstand.",
+          correct: false,
+          why: "Vuistregel omgekeerd: zonder goede aanvoer van bovenaf heeft een distale reconstructie weinig kans om open te blijven." },
+        { text: "Bij een bedreigd been neem je eerst de tijd voor een volledige, uitgebreide uitwerking vóór je een strategie kiest.",
+          correct: false,
+          why: "Hier geldt 'time is limb': bij kritieke lidmaatischemie is er vaak geen tijd voor een volledige work-up en beoordeel je snel welke strategie haalbaar is." }
+      ]
+    },
+    {
+      t: "4:55",
+      vignette: "Tijdens een ballondilatatie van een volledig verstopt, sterk verkalkt vatsegment lukt het niet om intraluminaal te blijven; de operator kiest bewust voor een subintimaal traject.",
+      stem: "Wat gebeurt er dan?",
+      options: [
+        { text: "De toegang tot het vat wordt subintimaal aangeprikt in plaats van percutaan met de Seldinger-techniek.",
+          correct: false,
+          why: "Access en passage worden verward: de toegang gebeurt echogeleid percutaan in de lies via Seldinger; 'subintimaal' slaat op het traject ter hoogte van het letsel." },
+        { text: "Er wordt tussen de vaatlagen een tweede lumen gecreëerd, waarna men verderop weer in het echte lumen uitkomt.",
+          correct: true,
+          why: "Juist. Het is een bewuste omweg langs buiten de intima, met heringang in het ware lumen voorbij de occlusie." },
+        { text: "Het is per definitie een verwikkeling die altijd met een stent moet worden afgedekt.",
+          correct: false,
+          why: "Een bewuste techniek wordt hier als ongeval gelezen. Een stent is pas nodig wanneer de flow effectief belemmerd wordt." },
+        { text: "De voerdraad blijft binnen het lumen en de ballon duwt de plaque enkel tegen de wand.",
+          correct: false,
+          why: "Dat beschrijft net de intraluminale route die je normaal nastreeft, en die hier precies niet lukte." }
+      ]
+    },
+    {
+      t: "5:21",
+      vignette: "Je behandelt een letsel ter hoogte van de lies, een zone die bij elke stap plooit.",
+      stem: "Welk stenttype kies je, en om welke reden?",
+      options: [
+        { text: "Een ballon-expandeerbare stent, want de hoge radiale kracht houdt de plooizone open.",
+          correct: false,
+          why: "Radiale kracht en compressietolerantie worden verward: net in een flexiezone kan zo'n stent platgedrukt worden en blijft hij plat." },
+        { text: "Een ballon-expandeerbare stent, want die is preciezer te plaatsen.",
+          correct: false,
+          why: "De eigenschap klopt, maar het is hier het verkeerde criterium. Ballon-expandeerbaar hoort bij korte, verkalkte letsels buiten plooizones." },
+        { text: "Een zelf-expandeerbare stent, want die herneemt zijn vorm na compressie.",
+          correct: true,
+          why: "Juist. Precies daarom is dit het type voor flexiezones zoals de lies — met als prijs minder precisie en minder radiale kracht." },
+        { text: "Een zelf-expandeerbare stent, want dat type levert meer radiale kracht en is preciezer te positioneren.",
+          correct: false,
+          why: "Goede keuze, verkeerde motivering: een zelf-expandeerbare stent geeft juist minder radiale kracht en is minder precies te plaatsen." }
+      ]
+    },
+    {
+      t: "5:50",
+      vignette: "",
+      stem: "Welke uitspraak over restenose en drug-eluting materiaal is juist?",
+      options: [
+        { text: "Restenose door intimale hyperplasie treedt binnen enkele uren tot dagen na de ingreep op.",
+          correct: false,
+          why: "Tijdvenster verward met de vroege verwikkelingen: recoil en dissectie spelen onmiddellijk, intimale hyperplasie vernauwt het lumen pas na weken tot maanden." },
+        { text: "Recoil is de laattijdige vorm van restenose en wordt door de coating voorkomen.",
+          correct: false,
+          why: "Recoil is net het onmiddellijk terugveren van de vernauwing en wordt met een stent opgevangen, niet met een anti-proliferatief geneesmiddel." },
+        { text: "Omdat drug-eluting materiaal de restenose vermindert, is de winst op levenskwaliteit daarmee ook aangetoond.",
+          correct: false,
+          why: "Sprong van een technisch naar een klinisch eindpunt: het effect op restenose is duidelijk, het voordeel op quality of life blijft betwist." },
+        { text: "Restenose ontstaat na weken tot maanden door intimale hyperplasie, een wondhelingsreactie van de vaatwand; paclitaxel-gecoate ballonnen en stents remmen die proliferatie en worden selectief, niet routinematig, gebruikt.",
+          correct: true,
+          why: "Juist. Het mechanisme, het tijdsverloop en de terughoudende indicatiestelling zitten hier alle drie correct in." }
+      ]
+    },
+    {
+      t: "6:51",
+      vignette: "Bij een patiënt zit een kort, verkalkt letsel ter hoogte van de arteria femoralis communis.",
+      stem: "Welke uitspraak over een endarterectomie klopt hier?",
+      options: [
+        { text: "Je opent het bloedvat, verwijdert lokaal de plaque met de intima en een stuk media, en sluit met een verwijdingspatch; de a. femoralis communis en de halsslagader zijn de voornaamste indicaties.",
+          correct: true,
+          why: "Juist. Het eigen vat blijft behouden en wordt met een patch verwijd gesloten." },
+        { text: "Bij een endarterectomie wordt het aangetaste vatsegment vervangen door een prothese.",
+          correct: false,
+          why: "Verward met een interpositie of bypass: bij een endarterectomie blijft het eigen bloedvat ter plaatse." },
+        { text: "Omdat er geen vreemd materiaal aan te pas komt, is infectie hier geen aandachtspunt.",
+          correct: false,
+          why: "Twee fouten in één: de patch ís materiaal, en de lies is net de plaats waar lymfelek en infectie dreigen. Elk vreemd materiaal, ook een stent, draagt dat risico." },
+        { text: "Het voordeel van de techniek is dat er nadien geen inflammatoire reactie met hernieuwde vernauwing kan optreden.",
+          correct: false,
+          why: "Dat is juist het gekende nadeel van een endarterectomie, geen voordeel." }
+      ]
+    },
+    {
+      t: "7:29",
+      vignette: "Bij een patiënt met een bedreigd been, een goede algemene toestand en een bruikbare vena saphena magna overweeg je meteen een bypass naar een onderbeenvat.",
+      stem: "Welke uitspraak over deze bypass is juist?",
+      options: [
+        { text: "De vena saphena magna is hier ongeschikt omdat ze kleppen bevat.",
+          correct: false,
+          why: "Klassieke valkuil: de kleppen vormen geen beletsel — de vene wordt omgekeerd of de kleppen worden onbruikbaar gemaakt. De VSM blijft het beste materiaal." },
+        { text: "Hoe distaler de aanhechting, hoe langer de bypass openblijft, want daar is het vat minder aangetast.",
+          correct: false,
+          why: "Omgekeerd: distaler is het doelvat smaller, het traject langer en de flow trager, dus blijft de bypass minder lang open. Tot aan de enkel doe je dat bijna enkel wanneer het been anders verloren gaat." },
+        { text: "Een goede outflow weegt minder zwaar dan een goede inflow, want de aanvoer bepaalt de flow.",
+          correct: false,
+          why: "Beide zijn voorwaarden: het bloed moet ook goed kúnnen wegstromen, anders tromboseert de bypass." },
+        { text: "De eigen vena saphena magna geniet de voorkeur: minste kans op infectie en de langste patency, zeker in de kleinere tibiale vaten.",
+          correct: true,
+          why: "Juist. Kunststof zoals Dacron of Goretex is een alternatief, maar scoort qua patency minder, en dat verschil is het grootst distaal." }
+      ]
+    },
+    {
+      t: "8:31",
+      vignette: "",
+      stem: "Welke uitspraak over de verwikkelingen van deze ingrepen is juist?",
+      options: [
+        { text: "Een pseudo-aneurysma is een verwijding waarbij de drie vaatlagen intact blijven.",
+          correct: false,
+          why: "Dat is de definitie van een echt aneurysma. Een pseudo-aneurysma is net een uitstulping zónder eigen vaatwand." },
+        { text: "Een bloeding aan de punctieplaats die zich retroperitoneaal uitbreidt, kan uitwendig onzichtbaar blijven en zich pas met shock aandienen.",
+          correct: true,
+          why: "Juist. Precies daarom is een normaal ogende lies bij een hypotensieve patiënt na een punctie geen geruststelling." },
+        { text: "Zwarte stoelgang bij iemand met een aortaprothese wijst zelden op een vaatprobleem.",
+          correct: false,
+          why: "Dit is net het alarmsignaal van een aorto-enterische fistel, in ernstige gevallen met bloedbraken." },
+        { text: "Faalt de revascularisatie, dan ampute je best hoog boven de knie, zodat de stomp zeker geneest.",
+          correct: false,
+          why: "Je amputeert net zo distaal mogelijk: de knie behouden helpt enorm bij de revalidatie, en de beslissing verloopt multidisciplinair." }
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   RENDERLOGICA — hieronder staat geen inhoud meer.
+   ========================================================================= */
+
+(function () {
+  "use strict";
+
+  var app = document.getElementById("app");
+  var backLink = document.getElementById("backLink");
+  backLink.href = QUIZ.videoUrl;
+
+  var state = { order: [], optOrder: [], current: 0, answers: [], started: false };
+  var LETTERS = "ABCDEFGH";
+
+  function label(i) { return LETTERS.charAt(i) || String(i + 1); }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  /* accepteert 275, "4:35" of "1:04:35" */
+  function toSeconds(t) {
+    if (typeof t === "number") return Math.max(0, Math.round(t));
+    var parts = String(t).trim().split(":").map(function (p) { return parseInt(p, 10) || 0; });
+    var s = 0;
+    for (var i = 0; i < parts.length; i++) s = s * 60 + parts[i];
+    return Math.max(0, s);
+  }
+  function videoAt(t) {
+    var sep = QUIZ.videoUrl.indexOf("?") === -1 ? "?" : "&";
+    return QUIZ.videoUrl + sep + "t=" + toSeconds(t);
+  }
+  function focusFirst() {
+    var h = app.querySelector("[data-focus]");
+    if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- startscherm ---------- */
+  function renderStart() {
+    var items = QUIZ.recap.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+    app.innerHTML =
+      '<h1 data-focus>' + esc(QUIZ.title) + '</h1>' +
+      '<p class="lede">' + esc(QUIZ.lede) + '</p>' +
+      '<ul class="recap">' + items + '</ul>' +
+      '<button class="btn btn-primary" id="start">Start de ' + QUIZ.questions.length + ' vragen</button>' +
+      '<p class="hint">Toets A tot D om te antwoorden, Enter voor de volgende vraag.</p>';
+    document.getElementById("start").addEventListener("click", function () { begin(false); });
+    focusFirst();
+  }
+
+  /* vragen in vaste volgorde bij de eerste beurt, willekeurig bij een nieuwe
+     poging; de opties worden altijd gehusseld */
+  function begin(randomiseQuestions) {
+    var n = QUIZ.questions.length;
+    state.order = randomiseQuestions ? shuffle(range(n)) : range(n);
+    state.optOrder = state.order.map(function (qi) {
+      return shuffle(range(QUIZ.questions[qi].options.length));
+    });
+    state.answers = new Array(n).fill(null);
+    state.current = 0;
+    state.started = true;
+    renderQuestion();
+  }
+
+  /* ---------- vraagscherm ---------- */
+  function renderQuestion() {
+    var pos = state.current;
+    var q = QUIZ.questions[state.order[pos]];
+    var oo = state.optOrder[pos];
+    var total = state.order.length;
+
+    var segs = "";
+    for (var s = 0; s < total; s++) {
+      var cls = s < pos ? "seg done" : (s === pos ? "seg now" : "seg");
+      segs += '<div class="' + cls + '"></div>';
+    }
+
+    var opts = oo.map(function (oi, idx) {
+      var o = q.options[oi];
+      return '<button class="opt" data-idx="' + idx + '" data-opt="' + oi + '">' +
+               '<span class="key">' + label(idx) + '</span>' +
+               '<span class="col"><span>' + esc(o.text) + '</span>' +
+               '<span class="why" hidden></span></span>' +
+             '</button>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="vessel" role="presentation">' + segs + '</div>' +
+      '<p class="count">Vraag ' + (pos + 1) + ' van ' + total + '</p>' +
+      (q.vignette ? '<p class="vignette">' + esc(q.vignette) + '</p>' : '') +
+      '<h2 class="stem" data-focus>' + esc(q.stem) + '</h2>' +
+      '<div class="opts" id="opts">' + opts + '</div>' +
+      '<p class="verdict" id="verdict" aria-live="polite"></p>' +
+      '<div id="actions"></div>';
+
+    Array.prototype.slice.call(app.querySelectorAll(".opt")).forEach(function (b) {
+      b.addEventListener("click", function () { answer(parseInt(b.dataset.opt, 10)); });
+    });
+    focusFirst();
+  }
+
+  function answer(chosenOpt) {
+    var pos = state.current;
+    if (state.answers[pos] !== null) return;
+    state.answers[pos] = chosenOpt;
+
+    var q = QUIZ.questions[state.order[pos]];
+    var isRight = q.options[chosenOpt].correct === true;
+    var buttons = Array.prototype.slice.call(app.querySelectorAll(".opt"));
+    var correctIdx = 0;
+
+    buttons.forEach(function (b, i) {
+      var oi = parseInt(b.dataset.opt, 10);
+      var o = q.options[oi];
+      b.disabled = true;
+      if (o.correct) { b.classList.add("ok"); correctIdx = i; }
+      else if (oi === chosenOpt) b.classList.add("bad");
+      else b.classList.add("dim");
+      var key = b.querySelector(".key");
+      if (o.correct) key.textContent = "\u2713";
+      else if (oi === chosenOpt) key.textContent = "\u2715";
+      var why = b.querySelector(".why");
+      why.textContent = o.why;
+      why.hidden = false;
+    });
+
+    var v = document.getElementById("verdict");
+    v.className = "verdict " + (isRight ? "good" : "poor");
+    v.textContent = isRight ? "Juist." : "Fout — het juiste antwoord is optie " + label(correctIdx) + ".";
+
+    var last = pos === state.order.length - 1;
+    document.getElementById("actions").innerHTML =
+      '<button class="btn btn-primary" id="next">' + (last ? "Bekijk je resultaat" : "Volgende vraag") + '</button>';
+    var next = document.getElementById("next");
+    next.addEventListener("click", advance);
+    next.focus({ preventScroll: true });
+  }
+
+  function advance() {
+    if (state.current === state.order.length - 1) renderResults();
+    else { state.current++; renderQuestion(); }
+  }
+
+  /* ---------- eindscherm ---------- */
+  function renderResults() {
+    state.started = false;
+    var total = state.order.length;
+    var wrong = [];
+    var score = 0;
+
+    state.order.forEach(function (qi, pos) {
+      var q = QUIZ.questions[qi];
+      var chosen = state.answers[pos];
+      if (chosen !== null && q.options[chosen].correct) score++;
+      else wrong.push(q);
+    });
+
+    var pct = Math.round((score / total) * 100);
+    var msg = pct === 100 ? "Alles juist. Deze les zit."
+            : pct >= 75 ? "Stevige basis. Neem de misgelopen stukjes nog eens door."
+            : pct >= 50 ? "De helft zit er. De fragmenten hieronder zijn je snelste winst."
+            : "Nog wat werk. Bekijk de aangeduide stukken opnieuw en probeer daarna nog eens.";
+
+    var reviewHtml = "";
+    if (wrong.length) {
+      reviewHtml = '<div class="review"><h2>Wat nog niet zat</h2>' +
+        wrong.map(function (q) {
+          var right = q.options.filter(function (o) { return o.correct; })[0];
+          return '<div class="miss">' +
+                   '<p>' + esc(q.stem) + '</p>' +
+                   '<p class="fix"><em>' + esc(right.text) + '</em></p>' +
+                   '<a class="jump" href="' + videoAt(q.t) + '" target="_blank" rel="noopener">' +
+                     '<span class="dot"></span>Bekijk dit stuk opnieuw</a>' +
+                 '</div>';
+        }).join("") + '</div>';
+    }
+
+    app.innerHTML =
+      '<h1 data-focus>Resultaat</h1>' +
+      '<div class="score"><b>' + score + '/' + total + '</b><span>' + pct + '% juist</span></div>' +
+      '<p class="msg">' + esc(msg) + '</p>' +
+      reviewHtml +
+      '<button class="btn btn-primary" id="again">Opnieuw proberen</button>' +
+      '<a class="btn btn-ghost" href="' + QUIZ.videoUrl + '" target="_blank" rel="noopener">Terug naar de video</a>';
+
+    document.getElementById("again").addEventListener("click", function () { begin(true); });
+    focusFirst();
+  }
+
+  /* ---------- toetsenbord ---------- */
+  document.addEventListener("keydown", function (e) {
+    if (!state.started) return;
+    if (e.target && (e.target.tagName === "A" || e.target.id === "next")) return;
+    var pos = state.current;
+    var answered = state.answers[pos] !== null;
+
+    if (!answered) {
+      var idx = -1;
+      if (e.key >= "1" && e.key <= "9") idx = parseInt(e.key, 10) - 1;
+      else if (e.key.length === 1) idx = LETTERS.indexOf(e.key.toUpperCase());
+      if (idx >= 0) {
+        var b = app.querySelector('.opt[data-idx="' + idx + '"]');
+        if (b) { e.preventDefault(); answer(parseInt(b.dataset.opt, 10)); return; }
+      }
+    }
+    if (e.key === "Enter" && answered) { e.preventDefault(); advance(); }
+  });
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
