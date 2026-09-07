@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oefenvragen — Vaatheelkunde 5: niet-atherosclerotische occlusieve vaataandoeningen &amp; vasculair trauma</title>
+<style>
+  :root{
+    /* papier */
+    --paper:#FFFFFF;
+    --tint:#FBF6F5;
+    --tint-2:#F5EBEA;
+    --line:#E7DAD9;
+    --line-soft:#EFE5E4;
+    --text:#241A1E;
+    --muted:#786169;
+    /* bloed: chrome, voortgang, vignet */
+    --blood:#8C1D33;
+    --blood-dark:#6E1327;
+    --blood-soft:#F7E9EB;
+    /* geoxygeneerd: juist antwoord */
+    --ok:#1C7A5B;
+    --ok-soft:#E9F4EF;
+    /* fout antwoord */
+    --wrong:#C62B3E;
+    --wrong-soft:#FDECEE;
+    --r:12px;
+    --pad:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 var(--pad) 56px}
+
+  /* ---------- top bar ---------- */
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 0 10px;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:22px;
+  }
+  .back{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--muted);text-decoration:none;
+    font-size:14px;font-weight:500;
+    padding:10px 12px 10px 0;
+    border-radius:var(--r);
+    transition:color .15s ease;
+  }
+  .back:hover{color:var(--blood)}
+  .brand{font-size:12px;color:#A08A90}
+
+  /* ---------- vat als voortgangsindicator ---------- */
+  .vessel{display:flex;gap:2px;height:9px;margin:0 0 8px}
+  .seg{
+    flex:1;background:var(--tint-2);
+    transition:background .35s ease;
+  }
+  .seg:first-child{border-radius:6px 0 0 6px}
+  .seg:last-child{border-radius:0 6px 6px 0}
+  .seg.done{background:var(--blood-dark)}
+  .seg.now{background:var(--blood)}
+  .count{font-size:13px;color:var(--muted);margin:0 0 20px}
+
+  /* ---------- typografie ---------- */
+  h1{font-size:27px;line-height:1.2;letter-spacing:-.02em;font-weight:650;margin:0 0 6px}
+  h1:focus,h2:focus{outline:none}
+  .lede{color:var(--muted);margin:0 0 26px;font-size:15.5px}
+  .vignette{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:16.5px;line-height:1.62;color:#4A3840;
+    margin:0 0 14px;padding-left:14px;
+    border-left:2px solid var(--blood);
+  }
+  .stem{font-size:19px;line-height:1.38;font-weight:600;margin:0 0 18px;letter-spacing:-.01em}
+
+  /* ---------- recap ---------- */
+  .recap{list-style:none;margin:0 0 28px;padding:0}
+  .recap li{
+    padding:12px 0 12px 15px;
+    border-left:2px solid var(--line);
+    font-size:15px;color:#4A3840;
+  }
+  .recap li + li{margin-top:2px}
+  .recap b{color:var(--text);font-weight:600}
+
+  /* ---------- antwoordopties ---------- */
+  .opts{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;
+    width:100%;min-height:52px;padding:13px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    color:var(--text);
+    font:inherit;font-size:15.5px;line-height:1.4;
+    text-align:left;cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:#C9A9AF;background:var(--tint)}
+  .opt:disabled{cursor:default}
+  .key{
+    flex:0 0 22px;height:22px;margin-top:1px;
+    display:grid;place-items:center;
+    border:1px solid var(--line);border-radius:6px;
+    font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
+  }
+  .opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.ok .key{border-color:var(--ok);color:#FFFFFF;background:var(--ok);font-size:13px}
+  .opt.bad{border-color:var(--wrong);background:var(--wrong-soft)}
+  .opt.bad .key{border-color:var(--wrong);color:#FFFFFF;background:var(--wrong);font-size:13px}
+  .opt.dim{opacity:.66}
+  .why{margin:9px 0 0;padding:0;font-size:14px;line-height:1.5;color:var(--muted)}
+  .opt.ok .why{color:#16624A}
+  .opt.bad .why{color:#98202F}
+  .col{display:flex;flex-direction:column;min-width:0}
+
+  /* ---------- verdict en knoppen ---------- */
+  .verdict{font-size:14.5px;font-weight:600;margin:0 0 14px}
+  .verdict.good{color:var(--ok)}
+  .verdict.poor{color:var(--wrong)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:100%;min-height:52px;padding:14px 20px;
+    border-radius:var(--r);border:1px solid transparent;
+    font:inherit;font-size:16px;font-weight:600;
+    cursor:pointer;text-decoration:none;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .btn-primary{background:var(--blood);color:#FFF8F9;border-color:var(--blood)}
+  .btn-primary:hover{background:var(--blood-dark);border-color:var(--blood-dark)}
+  .btn-ghost{background:var(--paper);color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:#C9A9AF;background:var(--tint)}
+  .btn + .btn{margin-top:10px}
+  .hint{font-size:12.5px;color:#A08A90;margin:14px 0 0;text-align:center}
+
+  /* ---------- eindscherm ---------- */
+  .score{display:flex;align-items:baseline;gap:12px;padding:20px 0 4px}
+  .score b{font-size:44px;font-weight:650;letter-spacing:-.03em;line-height:1;color:var(--blood)}
+  .score span{font-size:15px;color:var(--muted)}
+  .msg{color:#4A3840;margin:8px 0 26px;font-size:15.5px}
+  .review{margin:0 0 24px}
+  .review h2{font-size:15px;font-weight:600;color:var(--muted);margin:0 0 12px}
+  .miss{
+    background:var(--tint);border:1px solid var(--line);
+    border-radius:var(--r);padding:14px;margin-bottom:10px;
+  }
+  .miss p{margin:0 0 6px;font-size:15px;line-height:1.4;font-weight:600}
+  .miss .fix{margin:0 0 12px;font-size:14px;color:var(--muted);line-height:1.5}
+  .miss .fix em{color:#16624A;font-style:normal}
+  .jump{
+    display:inline-flex;align-items:center;gap:8px;
+    min-height:44px;padding:10px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;
+    color:var(--text);text-decoration:none;font-size:14px;font-weight:500;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .jump:hover{border-color:var(--blood);background:var(--blood-soft)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--blood);flex:0 0 auto}
+
+  :focus-visible{outline:2px solid var(--blood-dark);outline-offset:2px;border-radius:4px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+  @media (min-width:600px){:root{--pad:24px} h1{font-size:31px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <a class="back" id="backLink" href="#" target="_blank" rel="noopener">← Terug naar de video</a>
+    <span class="brand">LUCID · Vaatheelkunde</span>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD — hier pas je alles aan. De renderlogica eronder blijft ongemoeid.
+
+   t = het moment in de video waar het juiste antwoord gezegd wordt.
+       Schrijf het als "m:ss" of "u:mm:ss" (bv. "4:35"), of als een
+       getal in seconden (bv. 275). Beide werken.
+
+   De volgorde van de opties wordt bij het starten altijd door elkaar
+   gehusseld, dus de plaats van het juiste antwoord in deze lijst is
+   voor de student niet zichtbaar.
+   ========================================================================= */
+
+const QUIZ = {
+  videoUrl: "https://youtu.be/omZQT_KoYzw",
+  title: "Vaatheelkunde 5 — niet-atherosclerotisch vaatlijden & vasculair trauma",
+  lede: "Tien vragen over de video. Kies een antwoord, lees waarom elke optie klopt of niet, en spring achteraf terug naar het stuk dat je gemist hebt.",
+
+  recap: [
+    "<b>Vasospastisch.</b> Het fenomeen van Raynaud verloopt in drie fases: bleekheid, cyanose, reactieve roodheid met pijn. De <b>ziekte</b> (primair, idiopathisch) treft jonge vrouwen, spaart de duim en geeft nauwelijks ulceraties — geruststellen, koude vermijden, rookstop. Het <b>syndroom</b> (secundair) zie je ook bij mannen, kan de duim aantasten en geeft hardnekkige ulceraties — onderliggend lijden behandelen en de huiddoorbloeding optimaliseren, bv. met een calciumantagonist.",
+    "<b>Vasculitis, geordend per kaliber.</b> Grote vaten: Takayasu-arteritis bij jonge vrouwen, aorta en grote aftakkingen, systemische fase gevolgd door fibrose → stenose → occlusie, medicamenteus behandeld. Middelgrote vaten: reuzecel-arteritis boven de 60 jaar, hoofdpijn, kauwclaudicatio, sterk verhoogde bloedbezinking, plotse visusverlies, diagnose via biopsie van de a. temporalis. Klein tot middelgroot: de ziekte van Buerger bij jonge, zware rokers, met ulceraties, thromboflebitis migrans en kurketrekker-collateralen.",
+    "<b>Dysplastisch.</b> Fibromusculaire dysplasie is geen ontsteking maar een dysplasie van de vaatwand, met zowel stenoses als dilataties. Typisch bij jonge, premenopauzale vrouwen, vooral in de nier- en halsslagaders, herkenbaar aan het kralensnoerbeeld. PTA is eerste keus wanneer er klachten zijn.",
+    "<b>Neurovasculaire compressie.</b> Bij het thoracic outlet syndroom wordt de bundel platgeknepen tussen thorax en arm. De zenuw is kwetsbaarder dan de vene, de vene kwetsbaarder dan de arterie: neurogeen is het meest frequent, arterieel het zeldzaamst maar het ernstigst. Beeldvorming en uitlokkingstesten gebeuren in rust én in uitlokkende houding; bij het veneuze type (Paget-Schroetter) komt trombolyse of tromboaspiratie vóór een ribresectie.",
+    "<b>Varianten en overbelasting.</b> Een arteria lusoria (rechter subclavia ontspringt distaal van de linker), een coarctatio (hoge druk in de armen, lage druk in de benen) en een persisterende arteria ischiadica (geen liespulsaties, wél distale pulsaties) moet je kunnen herkennen. Endofibrose van de a. iliaca externa treft jonge wielrenners: intimale hyperplasie door herhaald microtrauma, enkel te vatten met een enkel-armindex vóór én na maximaal fietsen.",
+    "<b>Vasculair trauma.</b> Het iatrogene letsel is het meest frequent: hematoom of bloeding (gevaarlijk als ze retroperitoneaal en dus onzichtbaar is), pseudo-aneurysma, AV-shunt en trombose. Bloedingscontrole verloopt in vaste volgorde: directe druk, dan packen met druk, en pas als laatste redmiddel een tourniquet. Bij stomp trauma is de intimascheur met flap en trombose het typische mechanisme. Na trauma of reperfusie blijft het compartimentsyndroom de valkuil: fasciotomie, of je verliest eerst de zenuw, dan de ader, dan de slagader."
+  ],
+
+  questions: [
+    {
+      t: "1:44",
+      vignette: "Een 54-jarige man krijgt bij koude spierwitte vingers die daarna blauw en vervolgens pijnlijk rood worden. Ook zijn duimen doen mee, en op één vingertop zit al maanden een ulceratie die niet geneest.",
+      stem: "Wat volgt hieruit voor de diagnose en de aanpak?",
+      options: [
+        { text: "Dit is de ziekte van Raynaud; geruststellen volstaat, want er dreigt geen weefselverlies.",
+          correct: false,
+          why: "De geruststelling hoort bij de primaire vorm. Hier is er al weefselverlies, en net dat sluit die vorm uit." },
+        { text: "Dit wijst op een syndroom van Raynaud: je zoekt actief naar een onderliggende oorzaak en behandelt die, naast het optimaliseren van de huiddoorbloeding.",
+          correct: true,
+          why: "Juist. Geslacht, aangetaste duimen en een hardnekkige ulceratie wijzen alle drie weg van de primaire vorm — er zit iets achter, en dat wordt je behandeldoel." },
+        { text: "Omdat de duimen mee zijn aangetast, gaat het per definitie niet om een Raynaud-fenomeen.",
+          correct: false,
+          why: "Denkfout: de duimbetrokkenheid sluit het fenomeen niet uit, ze plaatst het binnen het fenomeen bij de secundaire vorm." },
+        { text: "Het onderscheid primair-secundair heeft hier geen therapeutische gevolgen; in beide gevallen volstaat een calciumantagonist.",
+          correct: false,
+          why: "Het onderscheid stuurt net de hele aanpak: bij de primaire vorm draait het om geruststelling en preventie, bij de secundaire vorm om het onderliggende lijden. De calciumantagonist is daarbij ondersteunend, niet het antwoord op de vraag." }
+      ]
+    },
+    {
+      t: "5:00",
+      vignette: "Een 22-jarige vrouw heeft sinds maanden koorts, nachtzweten, vermagering en spierpijn. Bij het ophangen van de was wordt ze snel moe en duizelig. Links is de radiale pols nauwelijks voelbaar en er is 30 mmHg drukverschil tussen beide armen.",
+      stem: "Wat is hier de juiste eerste stap in de behandeling?",
+      options: [
+        { text: "Meteen een bypass naar de linker arm, want die is duidelijk hypoperfundeerd.",
+          correct: false,
+          why: "Te vroeg en op het verkeerde moment: een bypass komt alleen als het strikt nodig is, en buiten een acute inflammatoire fase. Zij zit nu net midden in de systemische fase." },
+        { text: "Corticoïden in hoge dosis starten na een biopsie van de a. temporalis.",
+          correct: false,
+          why: "Dat is het scenario van reuzecel-arteritis, bij een patiënt boven de 60. Hier zit je aan de andere kant van het leeftijdsspectrum en in een ander vatkaliber." },
+        { text: "Medicamenteus starten met corticoïden en immunosuppressiva; heelkunde komt pas later en enkel buiten een actieve inflammatoire fase in beeld.",
+          correct: true,
+          why: "Juist. Takayasu-arteritis is in de eerste plaats een medicamenteus behandelde ziekte; pas als de inflammatie onder controle is, kan een bypass overwogen worden." },
+        { text: "Absolute rookstop, want dat is de enige maatregel die het ziekteproces kan stoppen.",
+          correct: false,
+          why: "Rookstop is de kern bij de ziekte van Buerger, niet hier. De combinatie van systemische klachten, afwezige pulsaties en drukverschil bij een jonge vrouw wijst op een inflammatoire ziekte van de aorta en haar grote aftakkingen." }
+      ]
+    },
+    {
+      t: "5:49",
+      vignette: "Een 78-jarige vrouw heeft sinds weken hoofdpijn ter hoogte van de slaap en pijn bij het kauwen. Gisteren zag ze plots even wazig aan één oog. De slaapslagader voelt drukgevoelig aan.",
+      stem: "Welke uitspraak past bij dit beeld?",
+      options: [
+        { text: "De bloedbezinking is sterk verhoogd en de diagnose wordt bevestigd met een biopsie van de a. temporalis; de behandeling bestaat uit corticoïden in hoge dosis.",
+          correct: true,
+          why: "Juist. Leeftijd, hoofdpijn, kauwclaudicatio en de gevoelige slaapslagader vormen samen het beeld van reuzecel-arteritis; volg tijdens de behandeling ook de oogdruk en de bloeddruk op." },
+        { text: "Het kortdurende wazig zien staat los van dit beeld en vraagt geen bijzondere urgentie.",
+          correct: false,
+          why: "Precies omgekeerd: plots visusverlies is de gevreesde complicatie van deze arteritis en is juist de reden om er snel bij te zijn." },
+        { text: "Een duplex volstaat als bevestiging; een biopsie is bij deze aandoening niet aan de orde.",
+          correct: false,
+          why: "De diagnose steunt hier op de biopsie van de a. temporalis — dat is het element dat de examinator wil zien." },
+        { text: "Het gaat om een inflammatoire ziekte van de aorta en haar grote aftakkingen, met vooral klachten bij het heffen van de armen.",
+          correct: false,
+          why: "Verkeerd kaliber en verkeerde leeftijd: dat beschrijft Takayasu-arteritis bij een jonge vrouw. Reuzecel-arteritis zit in de a. temporalis en de retinale vaten." }
+      ]
+    },
+    {
+      t: "7:06",
+      vignette: "Een 37-jarige man rookt sinds zijn zestiende zwaar. Hij heeft pijnlijke wondjes aan twee tenen en aan een vingertop die niet genezen, zijn tenen kleuren soms blauw, en hij had eerder een pijnlijke harde streng in het been die van plaats veranderde.",
+      stem: "Welke uitspraak over zijn aandoening klopt?",
+      options: [
+        { text: "Een bypass naar de vaten van voet en hand is de behandeling van eerste keus.",
+          correct: false,
+          why: "Meestal onmogelijk: de aangetaste vaten zijn te klein en te ziek. Staptherapie helpt de collateralen, maar de doorslag geeft de rookstop." },
+        { text: "De aandoening tast de aorta en haar grote aftakkingen aan.",
+          correct: false,
+          why: "Verwarring met Takayasu. De ziekte van Buerger is een segmentaire aandoening van de kleine tot middelgrote arteriën én venen van handen en voeten." },
+        { text: "Absoluut en radicaal stoppen met álle tabak is de enige behandeling die het proces kan stilleggen; zonder rookstop volgt bijna altijd amputatie.",
+          correct: true,
+          why: "Juist. De recidiverende ulceraties, de verspringende oppervlakkige tromboflebitis en het zware rookgedrag bij een man onder de 50 vormen het klassieke beeld — en de tabak is hier geen risicofactor maar de motor." },
+        { text: "Door de aandoening zelf is zijn levensverwachting duidelijk verkort.",
+          correct: false,
+          why: "Klassieke examenvalkuil: bij de ziekte van Buerger is de levensverwachting ongeveer normaal, in tegenstelling tot bij atherosclerose. Wat op het spel staat is het lidmaat, niet de levensduur." }
+      ]
+    },
+    {
+      t: "7:59",
+      vignette: "Een 34-jarige vrouw wordt verwezen wegens moeilijk regelbare hypertensie. Op de beeldvorming van de nierslagaders wisselen vernauwingen en verwijdingen elkaar af, als een kralensnoer. Ze rookt niet en heeft geen andere risicofactoren.",
+      stem: "Wat is hier aan de hand en wat doe je?",
+      options: [
+        { text: "Een vasculitis van de nierslagaders; je start corticoïden en immunosuppressiva.",
+          correct: false,
+          why: "Er is hier geen ontsteking. Fibromusculaire dysplasie is een dysplastische wijziging van de vaatwand, en ontstekingsremmers grijpen daar niet op aan." },
+        { text: "Fibromusculaire dysplasie; bij klachten is ballondilatatie de eerste keus.",
+          correct: true,
+          why: "Juist. Jonge premenopauzale vrouw, nierslagaders en het kralensnoerbeeld: de behandeling volgt de symptomen, met PTA als eerste keus." },
+        { text: "Atherosclerotische nierarteriestenose; je optimaliseert de cardiovasculaire risicofactoren en volgt op.",
+          correct: false,
+          why: "Leeftijd, geslacht, afwezige risicofactoren en vooral het afwisselend vernauwd-verbrede beeld passen niet bij atherosclerose." },
+        { text: "Fibromusculaire dysplasie, maar die zit vooral in de vaten van de onderste ledematen.",
+          correct: false,
+          why: "De diagnose klopt, de lokalisatie niet: FMD zit vooral in de nierslagaders en de halsslagaders." }
+      ]
+    },
+    {
+      t: "9:06",
+      vignette: "Een gespierde, sportieve man van 26 komt op de spoed. Na een festival — warm weer, weinig gedronken, en de hele dag met de armen in de lucht — is zijn arm gezwollen, zwaar en blauwig. Hij voelt ook tintelingen tot in de hand.",
+      stem: "Welke aanpak hoort bij dit beeld?",
+      options: [
+        { text: "Onmiddellijk de eerste rib reseceren, zodat de compressie meteen weg is.",
+          correct: false,
+          why: "Volgorde omgekeerd bij het veneuze type: eerst de trombus aanpakken, pas daarna de compressie chirurgisch opheffen." },
+        { text: "Een duplex in rust; toont die geen compressie, dan is een thoracic outlet syndroom uitgesloten.",
+          correct: false,
+          why: "Onderzoek in rust alléén is de klassieke misser. Duplex, CTA of MRA en de uitlokkingstesten (Roos, Adson) moeten in rust én in uitlokkende houding gebeuren." },
+        { text: "Zoeken naar een aneurysma van de a. subclavia, want het arteriële type is veruit het meest frequent.",
+          correct: false,
+          why: "Frequentie omgedraaid: neurogeen is het meest frequent, arterieel het zeldzaamst — al is dat laatste wel het ernstigst. Dat volgt de kwetsbaarheid: zenuw vóór vene vóór arterie." },
+        { text: "Dit is een veneus thoracic outlet syndroom met een diepe veneuze trombose van de arm; eerst trombolyse of tromboaspiratie, en pas daarna een eventuele ribresectie.",
+          correct: true,
+          why: "Juist. Stuwing, zwelling en blauwverkleuring bij een gespierde man met uitlokkende houdingen vormen het syndroom van Paget-Schroetter." }
+      ]
+    },
+    {
+      t: "10:01",
+      vignette: "",
+      stem: "Welke uitspraak over anatomische varianten van de vaten is juist?",
+      options: [
+        { text: "Bij een persisterende arteria ischiadica voel je noch in de lies noch distaal pulsaties.",
+          correct: false,
+          why: "Het typische patroon is net omgekeerd samengesteld: géén liespulsaties, maar wél distale pulsaties — precies wat de variant zo verwarrend maakt bij klinisch onderzoek." },
+        { text: "Bij een arteria lusoria ontspringt de linker subclavia distaal van de rechter.",
+          correct: false,
+          why: "Links en rechts staan omgewisseld: het is de rechter subclavia die distaal van de linker ontspringt, en die kan aneurysmatisch worden." },
+        { text: "Een coarctatio herken je klinisch aan een hoge bloeddruk in de armen en een lage bloeddruk in de benen.",
+          correct: true,
+          why: "Juist. Dat drukverschil is met eenvoudig klinisch onderzoek al op te pikken, thoracaal zowel als abdominaal — een reden om zelf goed te meten." },
+        { text: "Varianten zijn embryonale toevalsbevindingen zonder klinisch belang; herkennen ervan verandert niets aan de aanpak.",
+          correct: false,
+          why: "Meestal onschuldig is niet hetzelfde als zonder belang. Als beeldvormer of chirurg moet je ze herkennen, en sommige — zoals de lusoria — kunnen zelf een probleem worden." }
+      ]
+    },
+    {
+      t: "10:49",
+      vignette: "Een 31-jarige wielertoerist fietst vlot 250 km per week. Zodra hij wil sprinten, verstijft en verzuurt zijn linkerbeen; in rust voelt hij niets. Hij rookt niet, heeft geen risicofactoren, en het klinisch onderzoek is normaal.",
+      stem: "Hoe bevestig je de vermoedelijke diagnose?",
+      options: [
+        { text: "De enkel-armindex in rust meten; is die normaal, dan is arterieel lijden uitgesloten.",
+          correct: false,
+          why: "Dat is precies de valkuil van endofibrose: in rust is de meting normaal, want de vernauwing is relatief en speelt pas bij maximale flow." },
+        { text: "De enkel-armindex meten vóór én na maximaal fietsen, eventueel aangevuld met intravasculaire echografie.",
+          correct: true,
+          why: "Juist. De patiënt brengt zijn eigen fiets mee; alleen onder belasting komt de endofibrose van de a. iliaca externa aan het licht." },
+        { text: "Een duplex van de iliacale vaten om de atherosclerotische plaque te lokaliseren.",
+          correct: false,
+          why: "Verkeerde ziekte: hier gaat het om intimale hyperplasie door het herhaalde microtrauma van de fietshouding, zonder atherosclerose en zonder risicofactoren." },
+        { text: "Uitlokkingstesten zoals de test van Roos, aangevuld met een EMG.",
+          correct: false,
+          why: "Die horen bij compressie ter hoogte van de thoracic outlet, dus bij klachten van de arm — niet bij een belastingsgebonden beenklacht." }
+      ]
+    },
+    {
+      t: "11:17",
+      vignette: "Twee uur na een coronarografie via de lies zakt de bloeddruk van een patiënte weg. In de lies zie je geen zwelling en geen blauwe verkleuring.",
+      stem: "Welke uitspraak over vasculair trauma is juist?",
+      options: [
+        { text: "Dat er niets te zien is in de lies, sluit een belangrijke bloeding uit.",
+          correct: false,
+          why: "Net het gevaarlijkste scenario: een retroperitoneale bloeding blijft van buitenaf onzichtbaar en wordt daardoor te laat herkend." },
+        { text: "Een pseudo-aneurysma is een verwijding waarbij alle vaatwandlagen mee uitzetten.",
+          correct: false,
+          why: "Dat is de definitie van een echt aneurysma. Een pseudo-aneurysma is net een uitstulping zónder eigen vaatwand." },
+        { text: "Het iatrogene letsel is vandaag het meest frequente vasculaire trauma, en de bloeding kan retroperitoneaal en dus onzichtbaar verlopen.",
+          correct: true,
+          why: "Juist. Door de sterke toename van endovasculaire technieken zijn hematoom en bloeding, pseudo-aneurysma, AV-shunt en trombose na een liespunctie de vaakst geziene vaatletsels." },
+        { text: "Bij een actieve uitwendige bloeding leg je meteen een tourniquet aan.",
+          correct: false,
+          why: "Volgorde overgeslagen: eerst directe druk met de handen, dan packen met druk, en pas als laatste redmiddel een tourniquet." }
+      ]
+    },
+    {
+      t: "12:37",
+      vignette: "Een 24-jarige man had een knieluxatie met een letsel van de a. poplitea. Vier uur na een geslaagde revascularisatie wordt zijn onderbeen opnieuw hevig pijnlijk en gespannen. Passief rekken van de tenen doet extreem veel pijn en hij begint gevoelsstoornissen te krijgen.",
+      stem: "Wat is de meest waarschijnlijke diagnose en wat doe je?",
+      options: [
+        { text: "Een compartimentsyndroom na reperfusie; je voert een fasciotomie uit.",
+          correct: true,
+          why: "Juist. De drukstijging in het compartiment vermindert de doorbloeding en veroorzaakt nog meer zwelling; alleen het openleggen van de compartimenten doorbreekt die vicieuze cirkel." },
+        { text: "Een nieuw embool; je herhaalt de embolectomie.",
+          correct: false,
+          why: "Denkfout: de klacht wordt toegeschreven aan de inflow terwijl het probleem in het weefsel errond zit. Rekpijn en een gespannen, hevig pijnlijk compartiment kort na een geslaagde reperfusie wijzen op drukstijging, niet op een nieuwe occlusie." },
+        { text: "Een diepe veneuze trombose van het onderbeen; je start therapeutische anticoagulatie.",
+          correct: false,
+          why: "Een DVT verklaart de extreme rekpijn en de snelle sensibele uitval na reperfusie niet, en met afwachten verlies je hier kostbare tijd." },
+        { text: "Normale postoperatieve zwelling; hoogstand en pijnstilling volstaan.",
+          correct: false,
+          why: "Afwachten is hier de gevaarlijkste keuze. Grijp je niet in, dan verlies je eerst de zenuw, dan de ader en ten slotte de slagader, met celnecrose tot gevolg." }
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   RENDERLOGICA — hieronder staat geen inhoud meer.
+   ========================================================================= */
+
+(function () {
+  "use strict";
+
+  var app = document.getElementById("app");
+  var backLink = document.getElementById("backLink");
+  backLink.href = QUIZ.videoUrl;
+
+  var state = { order: [], optOrder: [], current: 0, answers: [], started: false };
+  var LETTERS = "ABCDEFGH";
+
+  function label(i) { return LETTERS.charAt(i) || String(i + 1); }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  /* accepteert 275, "4:35" of "1:04:35" */
+  function toSeconds(t) {
+    if (typeof t === "number") return Math.max(0, Math.round(t));
+    var parts = String(t).trim().split(":").map(function (p) { return parseInt(p, 10) || 0; });
+    var s = 0;
+    for (var i = 0; i < parts.length; i++) s = s * 60 + parts[i];
+    return Math.max(0, s);
+  }
+  function videoAt(t) {
+    var sep = QUIZ.videoUrl.indexOf("?") === -1 ? "?" : "&";
+    return QUIZ.videoUrl + sep + "t=" + toSeconds(t);
+  }
+  function focusFirst() {
+    var h = app.querySelector("[data-focus]");
+    if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- startscherm ---------- */
+  function renderStart() {
+    var items = QUIZ.recap.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+    app.innerHTML =
+      '<h1 data-focus>' + esc(QUIZ.title) + '</h1>' +
+      '<p class="lede">' + esc(QUIZ.lede) + '</p>' +
+      '<ul class="recap">' + items + '</ul>' +
+      '<button class="btn btn-primary" id="start">Start de ' + QUIZ.questions.length + ' vragen</button>' +
+      '<p class="hint">Toets A tot D om te antwoorden, Enter voor de volgende vraag.</p>';
+    document.getElementById("start").addEventListener("click", function () { begin(false); });
+    focusFirst();
+  }
+
+  /* vragen in vaste volgorde bij de eerste beurt, willekeurig bij een nieuwe
+     poging; de opties worden altijd gehusseld */
+  function begin(randomiseQuestions) {
+    var n = QUIZ.questions.length;
+    state.order = randomiseQuestions ? shuffle(range(n)) : range(n);
+    state.optOrder = state.order.map(function (qi) {
+      return shuffle(range(QUIZ.questions[qi].options.length));
+    });
+    state.answers = new Array(n).fill(null);
+    state.current = 0;
+    state.started = true;
+    renderQuestion();
+  }
+
+  /* ---------- vraagscherm ---------- */
+  function renderQuestion() {
+    var pos = state.current;
+    var q = QUIZ.questions[state.order[pos]];
+    var oo = state.optOrder[pos];
+    var total = state.order.length;
+
+    var segs = "";
+    for (var s = 0; s < total; s++) {
+      var cls = s < pos ? "seg done" : (s === pos ? "seg now" : "seg");
+      segs += '<div class="' + cls + '"></div>';
+    }
+
+    var opts = oo.map(function (oi, idx) {
+      var o = q.options[oi];
+      return '<button class="opt" data-idx="' + idx + '" data-opt="' + oi + '">' +
+               '<span class="key">' + label(idx) + '</span>' +
+               '<span class="col"><span>' + esc(o.text) + '</span>' +
+               '<span class="why" hidden></span></span>' +
+             '</button>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="vessel" role="presentation">' + segs + '</div>' +
+      '<p class="count">Vraag ' + (pos + 1) + ' van ' + total + '</p>' +
+      (q.vignette ? '<p class="vignette">' + esc(q.vignette) + '</p>' : '') +
+      '<h2 class="stem" data-focus>' + esc(q.stem) + '</h2>' +
+      '<div class="opts" id="opts">' + opts + '</div>' +
+      '<p class="verdict" id="verdict" aria-live="polite"></p>' +
+      '<div id="actions"></div>';
+
+    Array.prototype.slice.call(app.querySelectorAll(".opt")).forEach(function (b) {
+      b.addEventListener("click", function () { answer(parseInt(b.dataset.opt, 10)); });
+    });
+    focusFirst();
+  }
+
+  function answer(chosenOpt) {
+    var pos = state.current;
+    if (state.answers[pos] !== null) return;
+    state.answers[pos] = chosenOpt;
+
+    var q = QUIZ.questions[state.order[pos]];
+    var isRight = q.options[chosenOpt].correct === true;
+    var buttons = Array.prototype.slice.call(app.querySelectorAll(".opt"));
+    var correctIdx = 0;
+
+    buttons.forEach(function (b, i) {
+      var oi = parseInt(b.dataset.opt, 10);
+      var o = q.options[oi];
+      b.disabled = true;
+      if (o.correct) { b.classList.add("ok"); correctIdx = i; }
+      else if (oi === chosenOpt) b.classList.add("bad");
+      else b.classList.add("dim");
+      var key = b.querySelector(".key");
+      if (o.correct) key.textContent = "\u2713";
+      else if (oi === chosenOpt) key.textContent = "\u2715";
+      var why = b.querySelector(".why");
+      why.textContent = o.why;
+      why.hidden = false;
+    });
+
+    var v = document.getElementById("verdict");
+    v.className = "verdict " + (isRight ? "good" : "poor");
+    v.textContent = isRight ? "Juist." : "Fout — het juiste antwoord is optie " + label(correctIdx) + ".";
+
+    var last = pos === state.order.length - 1;
+    document.getElementById("actions").innerHTML =
+      '<button class="btn btn-primary" id="next">' + (last ? "Bekijk je resultaat" : "Volgende vraag") + '</button>';
+    var next = document.getElementById("next");
+    next.addEventListener("click", advance);
+    next.focus({ preventScroll: true });
+  }
+
+  function advance() {
+    if (state.current === state.order.length - 1) renderResults();
+    else { state.current++; renderQuestion(); }
+  }
+
+  /* ---------- eindscherm ---------- */
+  function renderResults() {
+    state.started = false;
+    var total = state.order.length;
+    var wrong = [];
+    var score = 0;
+
+    state.order.forEach(function (qi, pos) {
+      var q = QUIZ.questions[qi];
+      var chosen = state.answers[pos];
+      if (chosen !== null && q.options[chosen].correct) score++;
+      else wrong.push(q);
+    });
+
+    var pct = Math.round((score / total) * 100);
+    var msg = pct === 100 ? "Alles juist. Deze les zit."
+            : pct >= 75 ? "Stevige basis. Neem de misgelopen stukjes nog eens door."
+            : pct >= 50 ? "De helft zit er. De fragmenten hieronder zijn je snelste winst."
+            : "Nog wat werk. Bekijk de aangeduide stukken opnieuw en probeer daarna nog eens.";
+
+    var reviewHtml = "";
+    if (wrong.length) {
+      reviewHtml = '<div class="review"><h2>Wat nog niet zat</h2>' +
+        wrong.map(function (q) {
+          var right = q.options.filter(function (o) { return o.correct; })[0];
+          return '<div class="miss">' +
+                   '<p>' + esc(q.stem) + '</p>' +
+                   '<p class="fix"><em>' + esc(right.text) + '</em></p>' +
+                   '<a class="jump" href="' + videoAt(q.t) + '" target="_blank" rel="noopener">' +
+                     '<span class="dot"></span>Bekijk dit stuk opnieuw</a>' +
+                 '</div>';
+        }).join("") + '</div>';
+    }
+
+    app.innerHTML =
+      '<h1 data-focus>Resultaat</h1>' +
+      '<div class="score"><b>' + score + '/' + total + '</b><span>' + pct + '% juist</span></div>' +
+      '<p class="msg">' + esc(msg) + '</p>' +
+      reviewHtml +
+      '<button class="btn btn-primary" id="again">Opnieuw proberen</button>' +
+      '<a class="btn btn-ghost" href="' + QUIZ.videoUrl + '" target="_blank" rel="noopener">Terug naar de video</a>';
+
+    document.getElementById("again").addEventListener("click", function () { begin(true); });
+    focusFirst();
+  }
+
+  /* ---------- toetsenbord ---------- */
+  document.addEventListener("keydown", function (e) {
+    if (!state.started) return;
+    if (e.target && (e.target.tagName === "A" || e.target.id === "next")) return;
+    var pos = state.current;
+    var answered = state.answers[pos] !== null;
+
+    if (!answered) {
+      var idx = -1;
+      if (e.key >= "1" && e.key <= "9") idx = parseInt(e.key, 10) - 1;
+      else if (e.key.length === 1) idx = LETTERS.indexOf(e.key.toUpperCase());
+      if (idx >= 0) {
+        var b = app.querySelector('.opt[data-idx="' + idx + '"]');
+        if (b) { e.preventDefault(); answer(parseInt(b.dataset.opt, 10)); return; }
+      }
+    }
+    if (e.key === "Enter" && answered) { e.preventDefault(); advance(); }
+  });
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
