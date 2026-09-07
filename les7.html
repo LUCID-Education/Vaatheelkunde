@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Oefenvragen — Vaatheelkunde 7: aortadissectie</title>
+<style>
+  :root{
+    /* papier */
+    --paper:#FFFFFF;
+    --tint:#FBF6F5;
+    --tint-2:#F5EBEA;
+    --line:#E7DAD9;
+    --line-soft:#EFE5E4;
+    --text:#241A1E;
+    --muted:#786169;
+    /* bloed: chrome, voortgang, vignet */
+    --blood:#8C1D33;
+    --blood-dark:#6E1327;
+    --blood-soft:#F7E9EB;
+    /* geoxygeneerd: juist antwoord */
+    --ok:#1C7A5B;
+    --ok-soft:#E9F4EF;
+    /* fout antwoord */
+    --wrong:#C62B3E;
+    --wrong-soft:#FDECEE;
+    --r:12px;
+    --pad:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    -webkit-text-size-adjust:100%;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:0 var(--pad) 56px}
+
+  /* ---------- top bar ---------- */
+  .top{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 0 10px;
+    border-bottom:1px solid var(--line-soft);
+    margin-bottom:22px;
+  }
+  .back{
+    display:inline-flex;align-items:center;gap:8px;
+    color:var(--muted);text-decoration:none;
+    font-size:14px;font-weight:500;
+    padding:10px 12px 10px 0;
+    border-radius:var(--r);
+    transition:color .15s ease;
+  }
+  .back:hover{color:var(--blood)}
+  .brand{font-size:12px;color:#A08A90}
+
+  /* ---------- vat als voortgangsindicator ---------- */
+  .vessel{display:flex;gap:2px;height:9px;margin:0 0 8px}
+  .seg{
+    flex:1;background:var(--tint-2);
+    transition:background .35s ease;
+  }
+  .seg:first-child{border-radius:6px 0 0 6px}
+  .seg:last-child{border-radius:0 6px 6px 0}
+  .seg.done{background:var(--blood-dark)}
+  .seg.now{background:var(--blood)}
+  .count{font-size:13px;color:var(--muted);margin:0 0 20px}
+
+  /* ---------- typografie ---------- */
+  h1{font-size:27px;line-height:1.2;letter-spacing:-.02em;font-weight:650;margin:0 0 6px}
+  h1:focus,h2:focus{outline:none}
+  .lede{color:var(--muted);margin:0 0 26px;font-size:15.5px}
+  .vignette{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:16.5px;line-height:1.62;color:#4A3840;
+    margin:0 0 14px;padding-left:14px;
+    border-left:2px solid var(--blood);
+  }
+  .stem{font-size:19px;line-height:1.38;font-weight:600;margin:0 0 18px;letter-spacing:-.01em}
+
+  /* ---------- recap ---------- */
+  .recap{list-style:none;margin:0 0 28px;padding:0}
+  .recap li{
+    padding:12px 0 12px 15px;
+    border-left:2px solid var(--line);
+    font-size:15px;color:#4A3840;
+  }
+  .recap li + li{margin-top:2px}
+  .recap b{color:var(--text);font-weight:600}
+
+  /* ---------- antwoordopties ---------- */
+  .opts{display:flex;flex-direction:column;gap:10px;margin:0 0 18px}
+  .opt{
+    display:flex;gap:12px;align-items:flex-start;
+    width:100%;min-height:52px;padding:13px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    color:var(--text);
+    font:inherit;font-size:15.5px;line-height:1.4;
+    text-align:left;cursor:pointer;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:#C9A9AF;background:var(--tint)}
+  .opt:disabled{cursor:default}
+  .key{
+    flex:0 0 22px;height:22px;margin-top:1px;
+    display:grid;place-items:center;
+    border:1px solid var(--line);border-radius:6px;
+    font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;
+    transition:border-color .15s ease,color .15s ease,background .15s ease;
+  }
+  .opt.ok{border-color:var(--ok);background:var(--ok-soft)}
+  .opt.ok .key{border-color:var(--ok);color:#FFFFFF;background:var(--ok);font-size:13px}
+  .opt.bad{border-color:var(--wrong);background:var(--wrong-soft)}
+  .opt.bad .key{border-color:var(--wrong);color:#FFFFFF;background:var(--wrong);font-size:13px}
+  .opt.dim{opacity:.66}
+  .why{margin:9px 0 0;padding:0;font-size:14px;line-height:1.5;color:var(--muted)}
+  .opt.ok .why{color:#16624A}
+  .opt.bad .why{color:#98202F}
+  .col{display:flex;flex-direction:column;min-width:0}
+
+  /* ---------- verdict en knoppen ---------- */
+  .verdict{font-size:14.5px;font-weight:600;margin:0 0 14px}
+  .verdict.good{color:var(--ok)}
+  .verdict.poor{color:var(--wrong)}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:100%;min-height:52px;padding:14px 20px;
+    border-radius:var(--r);border:1px solid transparent;
+    font:inherit;font-size:16px;font-weight:600;
+    cursor:pointer;text-decoration:none;
+    transition:background .15s ease,border-color .15s ease,color .15s ease;
+  }
+  .btn-primary{background:var(--blood);color:#FFF8F9;border-color:var(--blood)}
+  .btn-primary:hover{background:var(--blood-dark);border-color:var(--blood-dark)}
+  .btn-ghost{background:var(--paper);color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:#C9A9AF;background:var(--tint)}
+  .btn + .btn{margin-top:10px}
+  .hint{font-size:12.5px;color:#A08A90;margin:14px 0 0;text-align:center}
+
+  /* ---------- eindscherm ---------- */
+  .score{display:flex;align-items:baseline;gap:12px;padding:20px 0 4px}
+  .score b{font-size:44px;font-weight:650;letter-spacing:-.03em;line-height:1;color:var(--blood)}
+  .score span{font-size:15px;color:var(--muted)}
+  .msg{color:#4A3840;margin:8px 0 26px;font-size:15.5px}
+  .review{margin:0 0 24px}
+  .review h2{font-size:15px;font-weight:600;color:var(--muted);margin:0 0 12px}
+  .miss{
+    background:var(--tint);border:1px solid var(--line);
+    border-radius:var(--r);padding:14px;margin-bottom:10px;
+  }
+  .miss p{margin:0 0 6px;font-size:15px;line-height:1.4;font-weight:600}
+  .miss .fix{margin:0 0 12px;font-size:14px;color:var(--muted);line-height:1.5}
+  .miss .fix em{color:#16624A;font-style:normal}
+  .jump{
+    display:inline-flex;align-items:center;gap:8px;
+    min-height:44px;padding:10px 14px;
+    background:var(--paper);
+    border:1px solid var(--line);border-radius:10px;
+    color:var(--text);text-decoration:none;font-size:14px;font-weight:500;
+    transition:border-color .15s ease,background .15s ease;
+  }
+  .jump:hover{border-color:var(--blood);background:var(--blood-soft)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--blood);flex:0 0 auto}
+
+  :focus-visible{outline:2px solid var(--blood-dark);outline-offset:2px;border-radius:4px}
+
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+  @media (min-width:600px){:root{--pad:24px} h1{font-size:31px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <a class="back" id="backLink" href="#" target="_blank" rel="noopener">← Terug naar de video</a>
+    <span class="brand">LUCID · Vaatheelkunde</span>
+  </div>
+  <main id="app"></main>
+</div>
+
+<script>
+/* =========================================================================
+   INHOUD — hier pas je alles aan. De renderlogica eronder blijft ongemoeid.
+
+   t = het moment in de video waar het juiste antwoord gezegd wordt.
+       Schrijf het als "m:ss" of "u:mm:ss" (bv. "4:35"), of als een
+       getal in seconden (bv. 275). Beide werken.
+
+   De volgorde van de opties wordt bij het starten altijd door elkaar
+   gehusseld, dus de plaats van het juiste antwoord in deze lijst is
+   voor de student niet zichtbaar.
+   ========================================================================= */
+
+const QUIZ = {
+  videoUrl: "https://youtu.be/WxREg0ipfqo",
+  title: "Vaatheelkunde 7 — aortadissectie",
+  lede: "Tien vragen over de video. Kies een antwoord, lees waarom elke optie klopt of niet, en spring achteraf terug naar het stuk dat je gemist hebt.",
+
+  recap: [
+    "<b>Een dissectie is een scheur, geen aneurysma.</b> Een scheur in de intima en de binnenste laag van de media splijt de wand in de lengte open. Er ontstaan een echt lumen (bijna altijd het kleinste) en een vals lumen, met re-entries ter hoogte van de zijtakken. De basis is een verzwakte media, meestal door atherosclerose of een bindweefselaandoening. De term 'dissecerend aneurysma' vermijd je.",
+    "<b>Risicofactoren.</b> Atherosclerose is hoofdoorzaak nummer één, hypertensie is veruit de sterkst beïnvloedbare factor. Man/vrouw ongeveer 5 op 1; type A rond 50 à 60 jaar, type B rond 60 à 70 jaar. Bindweefselziekten, aortastenose, coarctatio, cocaïne en trauma verhogen het risico; powerliften, persen, een emotionele piek of ontregelde bloeddruk kunnen de trigger zijn.",
+    "<b>Classificatie en kliniek.</b> Stanford type A (±60%) betrekt de aorta ascendens en gaat altijd naar de cardiochirurg; type B (±40%) zit voorbij de linker a. subclavia. Bij meer dan 90% staat scherpe, hevige, scheurende pijn centraal. Denk breed: afhankelijk van de betrokken zijtak lijkt het op een infarct, een beroerte, een acute buik of een koud been.",
+    "<b>Diagnose.</b> Klinisch: klamme patiënt met hoge bloeddruk, asymmetrische of afwezige pulsaties (30 tot 50% links/rechtsverschil), geruis van aortaklepinsufficiëntie, pericardwrijven, soms tamponade. Beeldvorming eerste keuze is een CT a blanc, arterieel én veneus, van de halsvaten tot en met de a. femoralis communis.",
+    "<b>Behandeling.</b> Type A: vrijwel altijd cardiochirurgie; onbehandeld ongeveer 1% mortaliteit per uur, 20% na 24 uur, 65% na twee weken. Type B: mortaliteit ongeveer 10% na één maand, ongecompliceerd medicamenteus (bètablokkers, streefdruk 110 tot 120 mmHg systolisch, pijnstilling, bewaakte eenheid), gecompliceerd endovasculair met een gecoverde endoprothese over de proximale ingangsscheur. Gevreesde complicatie: retrograde type A dissectie.",
+    "<b>Opvolging en verwante beelden.</b> Iedereen wordt levenslang opgevolgd; 25 tot 40% van de type B ontwikkelt op termijn een aneurysma. Tot het acuut aortasyndroom horen ook het penetrerend aorta-ulcus en het intramuraal hematoom. Een dissectie kan ook spontaan of iatrogeen in elk ander bloedvat optreden."
+  ],
+
+  questions: [
+    {
+      t: "2:11",
+      vignette: "Arash is 55, rookt al zijn hele leven een pakje per dag en wordt behandeld voor hypertensie. Vanmorgen kreeg hij plots een enorme, scheurende pijn op de borst die uitstraalt tussen zijn schouderbladen. Hij dacht eerst aan zijn hart.",
+      stem: "Wat gebeurt er anatomisch bij de aandoening die je hier in de eerste plaats vermoedt?",
+      options: [
+        { text: "De aortawand verwijdt zich over alle drie de lagen tot ruim boven de normale diameter.",
+          correct: false,
+          why: "Dat is de definitie van een aneurysma. De denkfout is de twee beelden gelijkstellen: een dissectie is een scheur, geen verwijding. Precies daarom vermijd je ook de term 'dissecerend aneurysma'." },
+        { text: "Er scheurt een trombus los van een geruptureerde plaque en die sluit de aorta van binnenuit af.",
+          correct: false,
+          why: "Dat is een atherotrombotisch mechanisme. Atherosclerose ligt hier wel aan de basis, maar via een verzwakte media — het letsel zelf is een scheur in de wand, geen stolsel in het lumen." },
+        { text: "Er ontstaat een scheur in de intima en de binnenste laag van de media; onder invloed van de bloeddruk splijt de bloedstroom de wandlagen verder open en vormt zich een vals lumen.",
+          correct: true,
+          why: "Juist. Het splijten verloopt in de lengte, zowel naar proximaal als naar distaal, en dat verklaart waarom zoveel verschillende zijtakken in het proces betrokken kunnen raken." },
+        { text: "Alle wandlagen scheuren volledig door, waarna het bloed vrij in het mediastinum loopt.",
+          correct: false,
+          why: "Dat beschrijft een vrije ruptuur, het eindstadium. Bij een dissectie blijft het bloed binnen de wandlagen zelf — dat is net waarom de patiënt de eerste uren nog leeft." }
+      ]
+    },
+    {
+      t: "2:34",
+      vignette: "Je bekijkt de arteriële fase van de CT-scan samen met een collega en probeert uit te maken welk lumen het echte is.",
+      stem: "Welke uitspraak over het echte en het valse lumen is juist?",
+      options: [
+        { text: "Het echte lumen is bijna altijd het kleinste van de twee, en op verschillende plaatsen — vaak ter hoogte van de zijtakken — bestaan er verbindingen tussen beide lumina.",
+          correct: true,
+          why: "Juist. Die verbindingen heten re-entries, en ze verklaren mee waarom sommige zijtakken toch bevloeid blijven." },
+        { text: "Het valse lumen is per definitie het kleinste, omdat het pas recent ontstaan is.",
+          correct: false,
+          why: "Redeneren vanuit 'nieuw is dus klein' loopt hier mis. Het valse lumen staat onder systeemdruk en duwt het echte lumen net samen." },
+        { text: "Beide lumina zijn volledig van elkaar gescheiden; er bestaan geen verbindingen.",
+          correct: false,
+          why: "De re-entries worden hier over het hoofd gezien. Er zijn wel degelijk verbindingen, meestal ter hoogte van de zijtakken." },
+        { text: "Het valse lumen ligt buiten de adventitia, tussen de aorta en het omgevende weefsel.",
+          correct: false,
+          why: "Verkeerde laag. Het valse lumen loopt binnen de vaatwand zelf, tussen de opengespleten lagen van de media." }
+      ]
+    },
+    {
+      t: "4:03",
+      vignette: "Een 62-jarige man met een gekende dissectie type B en een slecht gecontroleerde bloeddruk vraagt wat hij er zelf aan kan doen.",
+      stem: "Wat is bij hem het belangrijkste aangrijpingspunt, en waarom?",
+      options: [
+        { text: "Zijn leeftijd en geslacht, want de man/vrouwverhouding bedraagt ongeveer vijf op één.",
+          correct: false,
+          why: "Het cijfer klopt, maar de redenering niet: leeftijd en geslacht liggen vast. Als aangrijpingspunt voor behandeling heb je er niets aan." },
+        { text: "De arteriële hypertensie, want dat is veruit de sterkst beïnvloedbare risicofactor.",
+          correct: true,
+          why: "Juist. Daarom staat strikte bloeddrukcontrole, bij voorkeur met bètablokkers, ook centraal in de levenslange opvolging." },
+        { text: "De atherosclerose, want als hoofdoorzaak nummer één is ze met medicatie volledig omkeerbaar.",
+          correct: false,
+          why: "Atherosclerose is inderdaad hoofdoorzaak nummer één, maar 'volledig omkeerbaar' is de denkfout. Je remt ze af via de risicofactoren; de reeds verzwakte media herstelt niet." },
+        { text: "Niets, want dissecties treden vrijwel uitsluitend op bij patiënten met een bindweefselziekte.",
+          correct: false,
+          why: "Bindweefselziekten verhogen het risico en geven een jongere presentatie, maar vormen een minderheid. Het gros van de dissecties treft oudere patiënten met atherosclerose en hypertensie." }
+      ]
+    },
+    {
+      t: "4:51",
+      vignette: "",
+      stem: "Welke uitspraak over de Stanford-classificatie is juist?",
+      options: [
+        { text: "Bij een type B ligt de scheur voorbij de linker arteria subclavia en is de aorta ascendens niet betrokken; dit is ongeveer 40% van de dissecties.",
+          correct: true,
+          why: "Juist. Stanford is een anatomische indeling, en de betrokkenheid van de aorta ascendens is het enige criterium dat telt." },
+        { text: "Type A is de minderheid en vertegenwoordigt ongeveer 40% van de dissecties.",
+          correct: false,
+          why: "Cijfers omgewisseld: type A is net de meerderheid, ongeveer 60%." },
+        { text: "Het onderscheid tussen type A en type B berust op de richting van de scheur, antegraad of retrograad.",
+          correct: false,
+          why: "De richting is wel een onderscheid, maar een derde en minder belangrijk. Stanford kijkt naar de plaats van het letsel, niet naar de richting." },
+        { text: "Bij een hemodynamisch stabiele type A dissectie kan de vaatchirurg endovasculair behandelen in plaats van de cardiochirurg te contacteren.",
+          correct: false,
+          why: "Stabiliteit is hier een vals geruststellend argument: een type A hoort altijd bij de cardiochirurg en wordt vrijwel altijd geopereerd, precies omdat de mortaliteit per uur oploopt." }
+      ]
+    },
+    {
+      t: "6:05",
+      vignette: "Een man van 57 komt op spoed met acute retrosternale pijn. Het ECG toont ST-elevatie. Bij het klinisch onderzoek meet je rechts een systolische bloeddruk die 40 mmHg hoger ligt dan links, en je hoort een diastolisch geruis.",
+      stem: "Wat is de meest waarschijnlijke verklaring voor dit geheel?",
+      options: [
+        { text: "Een klassiek myocardinfarct; het drukverschil tussen beide armen is een meetartefact.",
+          correct: false,
+          why: "Het afwijkende teken wordt weggeredeneerd. Een links/rechtsverschil komt bij 30 tot 50% van de dissecties voor en is samen met het klepgeruis net de aanwijzing die je niet mag missen." },
+        { text: "Een type B dissectie die zich uitbreidt naar de coronairen.",
+          correct: false,
+          why: "Anatomisch onmogelijk: een type B zit voorbij de linker arteria subclavia en kan de coronaire ostia of de aortaklep niet betrekken." },
+        { text: "Een type A dissectie waarbij de scheur de coronaire doorbloeding afsluit en de aortaklep doet lekken.",
+          correct: true,
+          why: "Juist. Dit is de klassieke valkuil bij type A: de patiënt presenteert zich als een hartinfarct, terwijl de échte oorzaak een dissectie is." },
+        { text: "Een longembool met rechterhartbelasting.",
+          correct: false,
+          why: "Een longembool verklaart noch de ST-elevatie, noch het asymmetrische armdrukverschil, noch het diastolisch geruis van aortaklepinsufficiëntie." }
+      ]
+    },
+    {
+      t: "7:02",
+      vignette: "Je vermoedt bij Arash een dissectie en overlegt met de radioloog over het scanprotocol.",
+      stem: "Welke aanpak van de beeldvorming sluit aan bij de les?",
+      options: [
+        { text: "Een arteriële fase alleen volstaat; een blanco reeks levert geen bijkomende informatie.",
+          correct: false,
+          why: "Zonder blanco reeks mis je het intramuraal hematoom, dat zich net kenmerkt door bloed in de wand zónder duidelijke intimascheur." },
+        { text: "Een CT-scan a blanc, arterieel én veneus, die loopt van de halsvaten tot en met de arteria femoralis communis.",
+          correct: true,
+          why: "Juist. A blanc voor het intramuraal hematoom, arterieel voor echt en vals lumen, ingangspoorten en afgesloten zijtakken, veneus om te zien of de organen nog bevloeid worden." },
+        { text: "Een CT beperkt tot de thorax volstaat, want daar bevindt het letsel zich.",
+          correct: false,
+          why: "Te kort gescand. Zowel de cardiochirurg als de vaatchirurg moeten het volledige traject en de toegangswegen tot in de liezen kunnen beoordelen." },
+        { text: "Beeldvorming heeft weinig meerwaarde; de diagnose wordt in de praktijk klinisch gesteld.",
+          correct: false,
+          why: "Klinisch onderzoek zet je op het spoor, maar het echte en valse lumen, de ingangspoorten en de afgesloten zijtakken breng je enkel met een scan in kaart." }
+      ]
+    },
+    {
+      t: "8:14",
+      vignette: "Een 68-jarige vrouw heeft een type B dissectie zonder tekenen van malperfusie of ruptuur. Ze heeft pijn en haar systolische bloeddruk bedraagt 175 mmHg.",
+      stem: "Wat is hier het beleid van eerste keuze?",
+      options: [
+        { text: "Meteen een gecoverde endoprothese plaatsen om de proximale ingangsscheur af te dekken.",
+          correct: false,
+          why: "Endovasculair behandelen is voorbehouden voor de gecompliceerde type B. Ongeveer 75% van de patiënten komt met medicamenteuze behandeling zonder complicaties door de acute fase." },
+        { text: "Bètablokkers met een streefdruk van 110 tot 120 mmHg systolisch, voldoende pijnstilling en monitoring op een bewaakte eenheid.",
+          correct: true,
+          why: "Juist. Het doel is de druk op de verzwakte wand verlagen, de kans op ruptuur verminderen en de patiënte pijnvrij maken." },
+        { text: "De bloeddruk zo laag mogelijk brengen, want elke mmHg minder verlaagt het ruptuurrisico.",
+          correct: false,
+          why: "Doorgeslagen redenering. Het streefdoel is 110 tot 120 mmHg mét verzekering van de eindorgaanperfusie; nog lager brengt de nieren, de darm en het ruggenmerg in gevaar." },
+        { text: "Pijnstilling zoveel mogelijk beperken, zodat je een verslechtering niet maskeert.",
+          correct: false,
+          why: "Gevaarlijke denkfout: pijn jaagt de bloeddruk juist omhoog en werkt zo verdere uitbreiding in de hand. Je detecteert uitbreiding door te monitoren, niet door pijn te laten bestaan." }
+      ]
+    },
+    {
+      t: "9:14",
+      vignette: "Dezelfde patiënte ontwikkelt na twee dagen een koud, pijnlijk linkerbeen met afwezige pulsaties.",
+      stem: "Welke uitspraak over de nu aangewezen behandeling is juist?",
+      options: [
+        { text: "Open heelkunde is bij een gecompliceerde type B de standaardbehandeling.",
+          correct: false,
+          why: "Open heelkunde wordt hier maar zelden toegepast — bijvoorbeeld vervanging van het aangetaste segment of een overbrugging naar afgesloten zijtakken. De voorkeurstechniek is endovasculair." },
+        { text: "De endoprothese wordt best zo lang mogelijk gemaakt, zodat alle re-entries mee afgedekt worden.",
+          correct: false,
+          why: "Omgekeerd: de prothese wordt zo kort mogelijk gehouden om zo weinig mogelijk intercostale arteriën af te sluiten. Enkel bij een volledige ruptuur dek je de hele thoracale aorta af." },
+        { text: "Door de proximale ingangsscheur met een gecoverde endoprothese af te dekken, wordt het valse lumen ontlast en de flow terug naar het echte lumen gestuurd.",
+          correct: true,
+          why: "Juist. Zo komt ook de remodellering van de aorta op gang, en dat is precies waarom je de ingangspoort proximaal aanpakt en niet het ischemische been afzonderlijk." },
+        { text: "Ontstaat er na de ingreep een retrograde type A dissectie, dan volstaat conservatieve opvolging met bloeddrukcontrole.",
+          correct: false,
+          why: "Dit is de complicatie die je zeker moet kennen, en ze wordt hier onderschat. Door manipulatie of spanning op de endoprothese loopt een nieuwe scheur naar de aorta ascendens: een type B wordt plots een levensbedreigende type A en de cardiochirurg moet onmiddellijk gebeld worden." }
+      ]
+    },
+    {
+      t: "10:26",
+      vignette: "",
+      stem: "Welke uitspraak over het natuurlijk verloop en de opvolging is juist?",
+      options: [
+        { text: "Onbehandeld bedraagt de mortaliteit van een type A ongeveer 10% na één maand.",
+          correct: false,
+          why: "Cijfer van het verkeerde type. Dat is de orde van grootte bij type B; bij type A loopt ze op met ongeveer 1% per uur in de eerste dagen, 20% na 24 uur en 65% na twee weken." },
+        { text: "Iedereen met een dissectie wordt levenslang opgevolgd; 25 tot 40% van de type B-patiënten ontwikkelt op termijn een aneurysma.",
+          correct: true,
+          why: "Juist. Regelmatige CT of MRI is daarom nodig om aneurysmavorming of uitbreiding tijdig op te sporen." },
+        { text: "Wie de acute fase zonder complicaties doorkomt, kan de opvolging na een jaar stopzetten.",
+          correct: false,
+          why: "Het overleven van de acute fase wordt verward met genezing. De wand blijft verzwakt, en de opvolging is levenslang — voor type A én type B." },
+        { text: "Bètablokkers worden bij de opvolging best vermeden wegens het risico op bradycardie.",
+          correct: false,
+          why: "Net omgekeerd: bètablokkers zijn de voorkeursklasse, want ze verlagen niet alleen de druk maar ook de pols-golf op de verzwakte wand." }
+      ]
+    },
+    {
+      t: "11:30",
+      vignette: "",
+      stem: "Welke uitspraak over het acuut aortasyndroom en over dissecties buiten de aorta is juist?",
+      options: [
+        { text: "Een penetrerend aorta-ulcus blijft steeds beperkt tot de wand en evolueert nooit verder.",
+          correct: false,
+          why: "Het wordt hier als onschuldig afgedaan, maar het kan wel degelijk aanleiding geven tot een dissectie of tot een sacculair aneurysma. Typisch bij mensen die veel roken en drinken." },
+        { text: "Een spontane dissectie komt uitsluitend ter hoogte van de aorta voor.",
+          correct: false,
+          why: "Ze kan in elk bloedvat optreden, met tekenen van perifere ischemie zoals een beroerte, een darminfarct of een koud been. De oorzaak blijft daarbij vaak onbekend." },
+        { text: "Een iatrogene dissectie door een guidewire of katheter herstelt vanzelf en vraagt geen behandeling.",
+          correct: false,
+          why: "Ook hier is behandeling nodig: revascularisatie van de ischemische gebieden en eventueel een stent om de gemaakte flap terug tegen de wand te drukken." },
+        { text: "Een intramuraal hematoom is een bloeduitstorting in de aortawand zonder duidelijke intimascheur en kan met de juiste medicatie soms spontaan genezen.",
+          correct: true,
+          why: "Juist. Velen beschouwen het als een voorloper van de dissectie: soms geneest het, soms evolueert het naar een echte dissectie." }
+      ]
+    }
+  ]
+};
+
+/* =========================================================================
+   RENDERLOGICA — hieronder staat geen inhoud meer.
+   ========================================================================= */
+
+(function () {
+  "use strict";
+
+  var app = document.getElementById("app");
+  var backLink = document.getElementById("backLink");
+  backLink.href = QUIZ.videoUrl;
+
+  var state = { order: [], optOrder: [], current: 0, answers: [], started: false };
+  var LETTERS = "ABCDEFGH";
+
+  function label(i) { return LETTERS.charAt(i) || String(i + 1); }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function range(n) { var a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  /* accepteert 275, "4:35" of "1:04:35" */
+  function toSeconds(t) {
+    if (typeof t === "number") return Math.max(0, Math.round(t));
+    var parts = String(t).trim().split(":").map(function (p) { return parseInt(p, 10) || 0; });
+    var s = 0;
+    for (var i = 0; i < parts.length; i++) s = s * 60 + parts[i];
+    return Math.max(0, s);
+  }
+  function videoAt(t) {
+    var sep = QUIZ.videoUrl.indexOf("?") === -1 ? "?" : "&";
+    return QUIZ.videoUrl + sep + "t=" + toSeconds(t);
+  }
+  function focusFirst() {
+    var h = app.querySelector("[data-focus]");
+    if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); }
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- startscherm ---------- */
+  function renderStart() {
+    var items = QUIZ.recap.map(function (r) { return "<li>" + r + "</li>"; }).join("");
+    app.innerHTML =
+      '<h1 data-focus>' + esc(QUIZ.title) + '</h1>' +
+      '<p class="lede">' + esc(QUIZ.lede) + '</p>' +
+      '<ul class="recap">' + items + '</ul>' +
+      '<button class="btn btn-primary" id="start">Start de ' + QUIZ.questions.length + ' vragen</button>' +
+      '<p class="hint">Toets A tot D om te antwoorden, Enter voor de volgende vraag.</p>';
+    document.getElementById("start").addEventListener("click", function () { begin(false); });
+    focusFirst();
+  }
+
+  /* vragen in vaste volgorde bij de eerste beurt, willekeurig bij een nieuwe
+     poging; de opties worden altijd gehusseld */
+  function begin(randomiseQuestions) {
+    var n = QUIZ.questions.length;
+    state.order = randomiseQuestions ? shuffle(range(n)) : range(n);
+    state.optOrder = state.order.map(function (qi) {
+      return shuffle(range(QUIZ.questions[qi].options.length));
+    });
+    state.answers = new Array(n).fill(null);
+    state.current = 0;
+    state.started = true;
+    renderQuestion();
+  }
+
+  /* ---------- vraagscherm ---------- */
+  function renderQuestion() {
+    var pos = state.current;
+    var q = QUIZ.questions[state.order[pos]];
+    var oo = state.optOrder[pos];
+    var total = state.order.length;
+
+    var segs = "";
+    for (var s = 0; s < total; s++) {
+      var cls = s < pos ? "seg done" : (s === pos ? "seg now" : "seg");
+      segs += '<div class="' + cls + '"></div>';
+    }
+
+    var opts = oo.map(function (oi, idx) {
+      var o = q.options[oi];
+      return '<button class="opt" data-idx="' + idx + '" data-opt="' + oi + '">' +
+               '<span class="key">' + label(idx) + '</span>' +
+               '<span class="col"><span>' + esc(o.text) + '</span>' +
+               '<span class="why" hidden></span></span>' +
+             '</button>';
+    }).join("");
+
+    app.innerHTML =
+      '<div class="vessel" role="presentation">' + segs + '</div>' +
+      '<p class="count">Vraag ' + (pos + 1) + ' van ' + total + '</p>' +
+      (q.vignette ? '<p class="vignette">' + esc(q.vignette) + '</p>' : '') +
+      '<h2 class="stem" data-focus>' + esc(q.stem) + '</h2>' +
+      '<div class="opts" id="opts">' + opts + '</div>' +
+      '<p class="verdict" id="verdict" aria-live="polite"></p>' +
+      '<div id="actions"></div>';
+
+    Array.prototype.slice.call(app.querySelectorAll(".opt")).forEach(function (b) {
+      b.addEventListener("click", function () { answer(parseInt(b.dataset.opt, 10)); });
+    });
+    focusFirst();
+  }
+
+  function answer(chosenOpt) {
+    var pos = state.current;
+    if (state.answers[pos] !== null) return;
+    state.answers[pos] = chosenOpt;
+
+    var q = QUIZ.questions[state.order[pos]];
+    var isRight = q.options[chosenOpt].correct === true;
+    var buttons = Array.prototype.slice.call(app.querySelectorAll(".opt"));
+    var correctIdx = 0;
+
+    buttons.forEach(function (b, i) {
+      var oi = parseInt(b.dataset.opt, 10);
+      var o = q.options[oi];
+      b.disabled = true;
+      if (o.correct) { b.classList.add("ok"); correctIdx = i; }
+      else if (oi === chosenOpt) b.classList.add("bad");
+      else b.classList.add("dim");
+      var key = b.querySelector(".key");
+      if (o.correct) key.textContent = "\u2713";
+      else if (oi === chosenOpt) key.textContent = "\u2715";
+      var why = b.querySelector(".why");
+      why.textContent = o.why;
+      why.hidden = false;
+    });
+
+    var v = document.getElementById("verdict");
+    v.className = "verdict " + (isRight ? "good" : "poor");
+    v.textContent = isRight ? "Juist." : "Fout — het juiste antwoord is optie " + label(correctIdx) + ".";
+
+    var last = pos === state.order.length - 1;
+    document.getElementById("actions").innerHTML =
+      '<button class="btn btn-primary" id="next">' + (last ? "Bekijk je resultaat" : "Volgende vraag") + '</button>';
+    var next = document.getElementById("next");
+    next.addEventListener("click", advance);
+    next.focus({ preventScroll: true });
+  }
+
+  function advance() {
+    if (state.current === state.order.length - 1) renderResults();
+    else { state.current++; renderQuestion(); }
+  }
+
+  /* ---------- eindscherm ---------- */
+  function renderResults() {
+    state.started = false;
+    var total = state.order.length;
+    var wrong = [];
+    var score = 0;
+
+    state.order.forEach(function (qi, pos) {
+      var q = QUIZ.questions[qi];
+      var chosen = state.answers[pos];
+      if (chosen !== null && q.options[chosen].correct) score++;
+      else wrong.push(q);
+    });
+
+    var pct = Math.round((score / total) * 100);
+    var msg = pct === 100 ? "Alles juist. Deze les zit."
+            : pct >= 75 ? "Stevige basis. Neem de misgelopen stukjes nog eens door."
+            : pct >= 50 ? "De helft zit er. De fragmenten hieronder zijn je snelste winst."
+            : "Nog wat werk. Bekijk de aangeduide stukken opnieuw en probeer daarna nog eens.";
+
+    var reviewHtml = "";
+    if (wrong.length) {
+      reviewHtml = '<div class="review"><h2>Wat nog niet zat</h2>' +
+        wrong.map(function (q) {
+          var right = q.options.filter(function (o) { return o.correct; })[0];
+          return '<div class="miss">' +
+                   '<p>' + esc(q.stem) + '</p>' +
+                   '<p class="fix"><em>' + esc(right.text) + '</em></p>' +
+                   '<a class="jump" href="' + videoAt(q.t) + '" target="_blank" rel="noopener">' +
+                     '<span class="dot"></span>Bekijk dit stuk opnieuw</a>' +
+                 '</div>';
+        }).join("") + '</div>';
+    }
+
+    app.innerHTML =
+      '<h1 data-focus>Resultaat</h1>' +
+      '<div class="score"><b>' + score + '/' + total + '</b><span>' + pct + '% juist</span></div>' +
+      '<p class="msg">' + esc(msg) + '</p>' +
+      reviewHtml +
+      '<button class="btn btn-primary" id="again">Opnieuw proberen</button>' +
+      '<a class="btn btn-ghost" href="' + QUIZ.videoUrl + '" target="_blank" rel="noopener">Terug naar de video</a>';
+
+    document.getElementById("again").addEventListener("click", function () { begin(true); });
+    focusFirst();
+  }
+
+  /* ---------- toetsenbord ---------- */
+  document.addEventListener("keydown", function (e) {
+    if (!state.started) return;
+    if (e.target && (e.target.tagName === "A" || e.target.id === "next")) return;
+    var pos = state.current;
+    var answered = state.answers[pos] !== null;
+
+    if (!answered) {
+      var idx = -1;
+      if (e.key >= "1" && e.key <= "9") idx = parseInt(e.key, 10) - 1;
+      else if (e.key.length === 1) idx = LETTERS.indexOf(e.key.toUpperCase());
+      if (idx >= 0) {
+        var b = app.querySelector('.opt[data-idx="' + idx + '"]');
+        if (b) { e.preventDefault(); answer(parseInt(b.dataset.opt, 10)); return; }
+      }
+    }
+    if (e.key === "Enter" && answered) { e.preventDefault(); advance(); }
+  });
+
+  renderStart();
+})();
+</script>
+</body>
+</html>
