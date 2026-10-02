@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Coördinator · LUCID Availability</title>
+  <meta name="description" content="Laad beschikbaarheidsbestanden en vind gemeenschappelijke vergadermomenten. Alles wordt lokaal in je browser verwerkt.">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#C91F1F">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-coordinator">
+  <a class="skip-link" href="#main">Naar de inhoud</a>
+
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="index.html" aria-label="LUCID Availability – startpagina">
+        <img src="lucid-logo.png" alt="LUCID" width="900" height="502">
+        <span class="brand-tag">Coordinator</span>
+      </a>
+      <nav class="header-nav" aria-label="Hoofdnavigatie">
+        <a href="availability.html">Invullen</a>
+        <a href="coordinator.html" aria-current="page">Coördinator</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="container">
+      <div class="page-head">
+        <div>
+          <h1>Gemeenschappelijke momenten zoeken</h1>
+          <p>Laad de beschikbaarheidsbestanden van je groep, kies de vergaderduur en vind wanneer iedereen kan.</p>
+        </div>
+        <span class="badge badge-success"><i data-icon="lock"></i> Volledig lokaal verwerkt</span>
+      </div>
+
+      <div class="coord-grid">
+        <!-- ============ Zijkolom ============ -->
+        <aside class="coord-side" aria-label="Bestanden en deelnemers">
+          <section class="card" aria-labelledby="files-title">
+            <h2 id="files-title" class="section-title" style="font-size:1.1rem"><span class="num-badge">1</span> Bestanden laden</h2>
+            <label class="dropzone" id="dropzone" for="fileInput">
+              <span class="dz-ico"><i data-icon="upload" class="icon-lg"></i></span>
+              <strong>Sleep beschikbaarheidsbestanden hierheen</strong>
+              <span class="muted small">of <u>klik om bestanden te selecteren</u> (.json, meerdere tegelijk)</span>
+              <input type="file" id="fileInput" accept=".json,application/json" multiple>
+            </label>
+            <p class="privacy-note"><i data-icon="shield"></i><span>De bestanden worden lokaal in uw browser verwerkt en niet geüpload.</span></p>
+            <ul class="file-log" id="fileLog" aria-live="polite"></ul>
+            <div class="btn-row" style="margin-top:10px">
+              <button class="btn btn-ghost btn-sm" type="button" id="clearLog" hidden>Meldingen wissen</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="loadSamples"><i data-icon="sparkle"></i> Voorbeeldgegevens laden</button>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="people-title">
+            <div class="card-header" style="margin-bottom:4px">
+              <h2 id="people-title" class="section-title" style="font-size:1.1rem"><span class="num-badge">2</span> Deelnemers</h2>
+              <button class="btn btn-danger-ghost btn-sm" type="button" id="removeAll" hidden><i data-icon="trash"></i> Alles</button>
+            </div>
+            <div class="people-count" id="peopleCount" aria-live="polite">Nog geen deelnemers geladen</div>
+            <ul class="people" id="peopleList"></ul>
+            <div class="common-period" id="commonPeriod" hidden></div>
+          </section>
+
+          <section class="card" aria-labelledby="invite-title">
+            <h2 id="invite-title" class="section-title" style="font-size:1.05rem"><i data-icon="link"></i> Uitnodigingslink</h2>
+            <p class="muted small" style="margin-bottom:10px">Maak een link waarin de periode al vastligt. Zo vult iedereen dezelfde dagen in.</p>
+            <div class="form-grid" style="grid-template-columns:1fr 1fr;gap:10px">
+              <div class="field"><label for="invStart">Van</label><input class="input input-sm" type="date" id="invStart"></div>
+              <div class="field"><label for="invEnd">Tot</label><input class="input input-sm" type="date" id="invEnd"></div>
+            </div>
+            <div class="field-error" id="invErr" aria-live="polite"></div>
+            <button class="btn btn-sm btn-block" type="button" id="invCopy" style="margin-top:10px"><i data-icon="copy"></i> Link kopiëren</button>
+          </section>
+        </aside>
+
+        <!-- ============ Hoofdkolom ============ -->
+        <div>
+          <section class="card" aria-labelledby="search-title">
+            <div class="card-header">
+              <div>
+                <h2 id="search-title" class="section-title" style="font-size:1.2rem"><span class="num-badge">3</span> Vergadering &amp; filters</h2>
+              </div>
+            </div>
+
+            <div class="controls-grid">
+              <div class="field">
+                <label for="duration">Duur vergadering</label>
+                <select class="input" id="duration"></select>
+              </div>
+              <div class="field">
+                <label for="minPeople">Minimaal aantal deelnemers</label>
+                <select class="input" id="minPeople" disabled><option>Iedereen</option></select>
+                <span class="hint">Kies minder dan iedereen om ook momenten te zien waarop bijna iedereen kan.</span>
+              </div>
+              <div class="field">
+                <span class="label">Datum</span>
+                <div class="time-pair">
+                  <input class="input input-sm" type="date" id="dateFrom" aria-label="Datum van">
+                  <span class="muted">tot</span>
+                  <input class="input input-sm" type="date" id="dateTo" aria-label="Datum tot">
+                </div>
+              </div>
+              <div class="field">
+                <span class="label">Uren</span>
+                <div class="time-pair">
+                  <select class="input input-sm" id="timeFrom" aria-label="Vroegste begintijd"></select>
+                  <span class="muted">tot</span>
+                  <select class="input input-sm" id="timeTo" aria-label="Laatste eindtijd"></select>
+                </div>
+              </div>
+              <div class="field full">
+                <span class="label">Dagen</span>
+                <div class="pill-group" id="weekdays"></div>
+              </div>
+              <div class="field full">
+                <span class="label">Type</span>
+                <div class="pill-group" id="types">
+                  <label class="check-pill"><input type="checkbox" value="physical" checked><span class="sw sw-1"></span> Iedereen fysiek</label>
+                  <label class="check-pill"><input type="checkbox" value="mixed" checked><span class="sw sw-1"></span><span class="sw sw-2" style="margin-left:-4px"></span> Fysiek/online combinatie</label>
+                  <label class="check-pill"><input type="checkbox" value="online" checked><span class="sw sw-2"></span> Iedereen online</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-row between" style="margin-top:20px">
+              <span class="muted small" id="searchHint">Laad eerst minstens één bestand.</span>
+              <button class="btn btn-primary btn-lg" type="button" id="searchBtn" disabled><i data-icon="search"></i> Zoek gemeenschappelijke momenten</button>
+            </div>
+          </section>
+
+          <section class="card" id="heatmapCard" aria-labelledby="hm-title" hidden>
+            <div class="card-header">
+              <div>
+                <h2 id="hm-title" style="font-size:1.2rem;margin:0">Visueel overzicht</h2>
+                <p class="card-sub">Per kwartier: rood = aantal fysiek, geel = aantal online, grijs = niet beschikbaar. Beweeg over of tik op een blok voor details.</p>
+              </div>
+            </div>
+            <div class="heatmap-wrap"><div class="heatmap" id="heatmap"></div></div>
+            <div class="hm-legend">
+              <span class="legend-item"><span class="sw sw-1"></span> fysiek</span>
+              <span class="legend-item"><span class="sw" style="background:var(--online)"></span> alleen online</span>
+              <span class="legend-item"><span class="sw sw-0"></span> niet beschikbaar</span>
+              <span class="legend-item"><span class="sw sw-all"></span> iedereen beschikbaar</span>
+              <span class="legend-item"><span class="sw sw-x"></span> klokwissel / geen gegevens</span>
+            </div>
+          </section>
+          <section class="card" id="resultsCard" aria-labelledby="results-title" hidden>
+            <div class="results-head">
+              <div>
+                <h2 id="results-title" style="font-size:1.2rem;margin:0">Resultaten</h2>
+                <div class="result-summary" id="resultSummary" style="margin-top:8px"></div>
+              </div>
+              <div class="btn-row">
+                <label class="visually-hidden" for="sortBy">Sorteren</label>
+                <select class="input input-sm" id="sortBy" style="width:auto">
+                  <option value="chrono">Chronologisch</option>
+                  <option value="type">Per type</option>
+                  <option value="available">Meeste deelnemers eerst</option>
+                  <option value="length">Langste venster eerst</option>
+                </select>
+                <button class="btn btn-sm" type="button" id="copyResults"><i data-icon="copy"></i> Kopieer overzicht</button>
+              </div>
+            </div>
+            <div id="resultNotes"></div>
+            <div id="results" aria-live="polite"></div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>© <span id="year">2026</span> LUCID · Availability</span>
+      <span class="privacy-inline"><i data-icon="shield"></i> Bestanden worden alleen in deze browser verwerkt. Sluit de pagina om alles te vergeten.</span>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="core.js"></script>
+  <script src="matcher.js"></script>
+  <script src="ui.js"></script>
+  <script src="coordinator.js"></script>
+</body>
+</html>
